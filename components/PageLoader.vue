@@ -15,7 +15,7 @@ onMounted(() => {
 
 <template>
    <div class="flex">
-      <div class="h-5 w-5 bg-blue-400 rounded" data-role="box"></div>
-      <div class="h-5 w-5 bg-green-400 rounded" data-role="box"></div>
+      <div class="h-5 w-5 bg-skyblue-500 rounded" data-role="box"></div>
+      <div class="h-5 w-5 bg-green-500 rounded" data-role="box"></div>
    </div>
 </template>

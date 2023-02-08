@@ -1,31 +1,36 @@
 <script lang="ts" setup>
 import "@fontsource/numans";
-import DoitLogo from "~/assets/doit_logo.svg";
-import DoitLogoDark from "~/assets/doit_logo_dark.svg";
 
-const isDark = useDark({
-   initialValue: "dark",
-});
-const toggleDark = useToggle(isDark);
+const task = {
+   task: "Do the laundry",
+   done: true
+}
 </script>
 
 <template>
    <div
-      class="w-full h-screen dark:bg-[#00001d] dark:text-white flex flex-col gap-5 items-center justify-center transition"
-      :class="{ dark: isDark }">
+      class="w-full h-screen p-12 text-dark-500 bg-light-200 dark:bg-dark-500 dark:text-white flex flex-col gap-10 items-center justify-center transition">
 
       <Head>
          <Title>Doit by Navato Labs</Title>
       </Head>
-      <a @click="toggleDark()">
-         <template v-if="isDark">
-            <doit-logo class="h-10" />
-         </template>
-         <template v-else>
-            <doit-logo-dark class="h-10" />
-         </template>
-      </a>
-      <page-loader />
+      <header>
+         <toggle-logo />
+      </header>
+      <!-- <page-loader /> -->
+      <main class="w-full flex-1 max-w-6xl flex justify-between gap-12">
+         <list-board>
+            <task-item :task="task" />
+         </list-board>
+         <list-board>
+            <task-item :task="task" />
+            <task-item :task="task" />
+            <task-item :task="task" />
+         </list-board>
+         <list-board>
+            <task-item :task="task" />
+         </list-board>
+      </main>
    </div>
 </template>
 
