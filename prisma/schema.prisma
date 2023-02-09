@@ -9,3 +9,24 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Task {
+  id   Int     @id @default(autoincrement())
+  task String
+  done Boolean
+
+  taskList   TaskList? @relation(fields: [taskListId], references: [id])
+  taskListId Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TaskList {
+  id    Int    @id @default(autoincrement())
+  title String
+  tasks Task[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
