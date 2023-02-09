@@ -17,7 +17,7 @@ const mValue = useVModel(props, "value", emit);
 
 <template>
    <div class="h-full w-full flex flex-col justify-center">
-      <input class="w-full p-1 px-2 rounded-lg bg-transparent outline-none h-200"
+      <input class="w-full p-1 rounded-lg bg-transparent outline-none h-200"
          :placeholder="placeholder" v-model="mValue" :maxlength="maxlength" @keypress.enter.prevent=""  />
    </div>
 </template>

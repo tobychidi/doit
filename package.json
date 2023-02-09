@@ -14,12 +14,14 @@
     "nuxt-icon": "^0.2.11"
   },
   "dependencies": {
+    "@floating-ui/vue": "^0.2.0",
     "@fontsource/numans": "^4.5.10",
     "@pinia/nuxt": "^0.4.6",
     "@vueuse/core": "^9.12.0",
     "@vueuse/nuxt": "^9.12.0",
     "motion": "^10.15.5",
     "pinia": "^2.0.30",
-    "prisma": "^4.10.0"
+    "prisma": "^4.10.0",
+    "vuedraggable": "^4.1.0"
   }
 }

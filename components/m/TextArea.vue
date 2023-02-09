@@ -1,16 +1,14 @@
 <script lang="ts" setup>
-import { Motion, Presence } from "motion/vue";
-
 const props = withDefaults(
    defineProps<{
       placeholder?: string;
-      value: string;
+      value?: string;
    }>(),
    {
       placeholder: "Placeholder",
    }
 );
-const emit = defineEmits(["update:value"]);
+const emit = defineEmits(["update:value", "enter"]);
 
 const mValue = useVModel(props, "value", emit);
 const maxCharacterLength = ref(96)
@@ -21,7 +19,7 @@ const rows = ref(1)
 const inFocus = ref(false)
 
 watchEffect(() => {
-   characterCount.value = mValue.value.length
+   characterCount.value = mValue.value?.length ?? 0
    const quotient = characterCount.value / (maxCharacterLength.value / maxRows.value)
    if (quotient <= 1) {
       rows.value = 1
@@ -40,17 +38,20 @@ function handleFocus() {
 function handleBlur() {
    inFocus.value = false
 }
+function handleEnter(){
+   emit("enter")
+}
 </script>
 
 <template>
-   <Presence class="h-full w-full flex flex-col justify-center">
-      <textarea class="w-full p-1 px-2 rounded-lg bg-transparent outline-none h-200 resize-none overflow-hidden"
+   <div class="h-full w-full flex flex-col justify-center">
+      <textarea class="w-full p-1 rounded-lg bg-transparent outline-none h-200 resize-none overflow-hidden"
          :placeholder="placeholder" v-model="mValue" :rows="rows" :maxlength="maxCharacterLength"
-         @keypress.enter.prevent="" @focus="handleFocus" @blur="handleBlur" />
-
-      <Motion tag="p" class="text-xs text-light-600 self-end" v-show="inFocus" :initial="{ y:-10, scale: 0 }"
-         :animate="{ y: 0, scale: 1 }" :exit="{ y:-10, scale: 0.6 }" :transition="{ duration: 2 }">
-         {{ characterCount }}/{{ maxCharacterLength }}
-      </Motion>
-   </Presence>
+         @keypress.enter.prevent="handleEnter" @focus="handleFocus" @blur="handleBlur" />
+      <!-- <div class="text-xs text-light-600 self-end transition" :class="{
+         'opacity-0 -translate-y-1': !inFocus
+      }">
+         {{ characterCount }} / {{ maxCharacterLength }}
+      </div> -->
+   </div>
 </template>

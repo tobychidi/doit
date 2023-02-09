@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { timeline, stagger } from "motion";
+import { Motion } from "motion/vue";
 onMounted(() => {
    const boxes = document.querySelectorAll("[data-role=box]");
    if (boxes) {

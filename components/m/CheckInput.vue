@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const props = defineProps<{
-   value: boolean;
+   value?: boolean;
 }>()
 const emit = defineEmits(["update:value"])
 
