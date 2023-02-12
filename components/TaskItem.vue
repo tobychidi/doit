@@ -8,21 +8,30 @@ const props = defineProps<{
 
 const emit = defineEmits<{
    (e: "enter", payload: Task): void;
+   (e: "ctrlEnter", payload: Task): void;
 }>();
 
-const taskValue = ref(props.task?.task);
-const doneValue = ref(props.task?.done);
+const taskValue = ref(props.task?.task ?? "");
+const doneValue = ref(props.task?.done ?? false);
 
+const currentTask = computed(() => ({
+   task: taskValue.value,
+   done: doneValue.value
+}))
+
+function resetTask() {
+   taskValue.value = ""
+   doneValue.value = false
+}
 function handleEnter() {
-   emit("enter", {
-      task: taskValue.value ?? "",
-      done: doneValue.value ?? false
-   });
+   emit("enter", currentTask.value);
 
    if (props.clearOnEnter) {
-      taskValue.value = ""
-      doneValue.value = false
+      resetTask()
    }
+}
+function handleCntrlEnter() {
+   emit("ctrlEnter", currentTask.value);
 }
 </script>
 <template>
@@ -31,12 +40,6 @@ function handleEnter() {
          <m-popover v-if="!hideMenu">
             <m-drag-handle />
             <template #content>
-               <menu-item>
-                  Convert to tasklist
-                  <template #icon>
-                     <Icon class="text-skyblue-500" name="ic:round-library-add-check" />
-                  </template>
-               </menu-item>
                <menu-item>
                   Convert to note
                   <template #icon>
@@ -57,7 +60,8 @@ function handleEnter() {
                </menu-item>
             </template>
          </m-popover>
-         <m-text-area class="text-sm" v-model:value="taskValue" :placeholder="placeholder" @enter="handleEnter" />
+         <m-text-area v-model:value="taskValue" placeholder="New task" @enter="handleEnter"
+            @ctrl-enter="handleCntrlEnter" />
          <m-check-input v-model:value="doneValue" />
       </div>
    </m-card>

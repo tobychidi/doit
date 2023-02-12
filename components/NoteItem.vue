@@ -30,15 +30,9 @@ function handleEnter() {
             <m-drag-handle />
             <template #content>
                <menu-item>
-                  Convert to tasklist
+                  Convert to task
                   <template #icon>
-                     <Icon class="text-skyblue-500" name="ic:round-library-add-check" />
-                  </template>
-               </menu-item>
-               <menu-item>
-                  Convert to note
-                  <template #icon>
-                     <Icon name="ic:round-sticky-note-2" />
+                     <Icon class="text-skyblue-500" name="eva:checkmark-square-2-fill" />
                   </template>
                </menu-item>
                <menu-item>
@@ -55,7 +49,7 @@ function handleEnter() {
                </menu-item>
             </template>
          </m-popover>
-         <m-text-area class="text-sm" v-model:value="noteValue" :placeholder="placeholder" @enter="handleEnter" />
+         <m-text-area v-model:value="noteValue" placeholder="New note" @enter="handleEnter" />
       </div>
    </m-card>
 </template>

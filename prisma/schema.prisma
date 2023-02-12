@@ -15,14 +15,14 @@ model Task {
   task String
   done Boolean
 
-  taskList   TaskList? @relation(fields: [taskListId], references: [id])
-  taskListId Int?
+  tasklist   Tasklist? @relation(fields: [tasklistId], references: [id])
+  tasklistId Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model TaskList {
+model Tasklist {
   id    Int    @id @default(autoincrement())
   title String
   tasks Task[]

@@ -2,26 +2,86 @@
 import "@fontsource/numans";
 import draggable from "vuedraggable";
 
-const taskList: TaskList = {
+const tasklist: Tasklist = {
    title: "Tasklist",
-   tasks: [{ task: "Eat food", done: false }]
-}
+   tasks: [{ task: "Eat food", done: false }],
+};
 
-const notes = useLocalStorage<Array<Note>>("notes", [])
-const tasks = useLocalStorage<Array<Task|TaskList>>("tasks", [])
-const tasksDone = useLocalStorage<Array<Task|TaskList>>("tasksDone", [])
+const notes = useLocalStorage<Array<Note>>("notes", []);
+const tasks = useLocalStorage<Array<Task | Tasklist>>("tasks", []);
+const tasksDone = useLocalStorage<Array<Task | Tasklist>>("tasksDone", []);
+const notesChange = ref(0)
+const tasksChange = ref(0)
+const tasksDoneChange = ref(0)
+const tasklistMode = ref<Tasklist | null>(null)
+
+const dragOptions = useDragOptions()
 
 function createNewNote(note: Note) {
-   notes.value.push(note)
+   if (note.note) notes.value.push(note);
 }
 function createNewTask(task: Task) {
-   tasks.value.push(task)
+   if (task.task) tasks.value.push(task);
+}
+function createNewTasklist(tasklist: Tasklist) {
+   if (tasklist.tasks) tasks.value.push(tasklist);
+}
+
+function convertToTask(tasklist: Tasklist){
+   console.log(tasklist)
+}
+
+function convertToTasklist(task: Task) {
+   console.log(task)
+   tasklistMode.value = {
+      title: "",
+      tasks: task.task ? [task] : []
+   }
+}
+
+function handleNotesAdd(e: any) {
+   const newIndex = e.newIndex
+   const oldNotes = notes.value
+   const movedNote = oldNotes[newIndex] as any
+   if (movedNote.task) {
+      oldNotes[newIndex] = { note: movedNote.task }
+   }
+   notes.value = new Array(...oldNotes)
+   notesChange.value++
+}
+
+function handleTasksAdd(e: any) {
+   const newIndex = e.newIndex
+   const oldTasks = tasks.value
+   const movedTask = oldTasks[newIndex] as any
+   if (movedTask.task) {
+      oldTasks[newIndex] = { ...movedTask, done: false }
+   }
+   if (movedTask.note) {
+      oldTasks[newIndex] = { task: movedTask.note, done: false }
+   }
+   tasks.value = new Array(...oldTasks)
+   tasksChange.value++
+}
+
+function handleTasksDoneAdd(e: any) {
+   const newIndex = e.newIndex
+   const oldTasks = tasksDone.value
+   const movedTask = oldTasks[newIndex] as any
+   if (movedTask.task) {
+      oldTasks[newIndex] = { ...movedTask, done: true }
+   }
+   if (movedTask.note) {
+      oldTasks[newIndex] = { task: movedTask.note, done: true }
+   }
+   tasksDone.value = new Array(...oldTasks)
+   tasksDoneChange.value++
 }
 </script>
 
 <template>
    <div
-      class="w-full h-screen box-border p-20 text-dark-500 bg-light-200 dark:bg-dark-600 dark:text-white flex flex-col gap-8 items-center justify-center transition overflow-hidden">
+      class="w-full h-screen box-border p-10 lg:p-20 text-dark-500 dark:bg-dark-600 dark:text-white flex flex-col gap-8 items-center justify-center transition overflow-hidden">
 
       <Head>
          <Title>Doit by Navato Labs</Title>
@@ -30,29 +90,40 @@ function createNewTask(task: Task) {
          <toggle-logo />
       </header>
       <!-- <page-loader /> -->
-      <main class="w-full h-full flex-1 max-w-6xl flex justify-between gap-12">
+      <main class="w-full h-full md:max-w-6xl flex-1 flex justify-between gap-4 md:gap-8 lg:gap-12 overflow-x-auto">
          <list-board>
-            <note-item placeholder="New note" clear-on-enter hide-menu @enter="createNewNote" />
-            <draggable class="flex flex-col flex-1 gap-4" group="items" handle=".handle" v-model:list="notes" item-key="task">
+            <note-item clear-on-enter hide-menu @enter="createNewNote" />
+            <draggable v-model:list="notes" :key="notesChange" item-key="note" v-bind="dragOptions"
+               @add="handleNotesAdd">
                <template #item="{ element: note }">
-                  <note-item :note="note" />
+                  <li>
+                     <note-item :note="note" :key="note" />
+                  </li>
                </template>
             </draggable>
          </list-board>
 
          <list-board>
-            <task-item placeholder="New task" clear-on-enter hide-menu @enter="createNewTask" />
-            <draggable class="flex flex-col flex-1 gap-4" group="items" handle=".handle" v-model:list="tasks" item-key="task">
+            <task-list-item v-if="tasklistMode" :tasklist="tasklistMode" clear-on-enter hide-menu @enter="createNewTasklist" @ctrl-enter="convertToTask" />
+            <task-item v-else clear-on-enter hide-menu @enter="createNewTask" @ctrl-enter="convertToTasklist" />
+            <draggable v-model:list="tasks" :key="tasksChange" item-key="task" v-bind="dragOptions"
+               @add="handleTasksAdd">
                <template #item="{ element: task }">
-                  <task-item :task="task" placeholder="New task" />
+                  <li v-if="task.task || task.tasks">
+                     <task-item v-if="task.task" :task="task" />
+                     <task-list-item v-if="task.tasks" :tasklist="task" />
+                  </li>
                </template>
             </draggable>
          </list-board>
 
          <list-board>
-            <draggable class="flex flex-col flex-1 gap-4" group="items" handle=".handle" v-model:list="tasksDone" item-key="task">
-               <template #item="{ element: task }">
-                  <task-item :task="task" placeholder="New task" />
+            <draggable v-model:list="tasksDone" :key="tasksDoneChange" item-key="task" v-bind="dragOptions"
+               @add="handleTasksDoneAdd">
+               <template #item="{ element: task, }">
+                  <li>
+                     <task-item :task="task" />
+                  </li>
                </template>
             </draggable>
          </list-board>
@@ -63,5 +134,10 @@ function createNewTask(task: Task) {
 <style>
 body {
    font-family: "Numans", sans-serif;
+   font-size: 15px;
+}
+
+.ghost {
+   opacity: 0.4;
 }
 </style>

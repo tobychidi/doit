@@ -42,7 +42,7 @@ onClickOutside(floating, () => {
       width: 'max-content',
    }" :initial="{ scale: .8, opacity: .5 }" :animate="{ scale: 1, opacity: 1 }" :transition="{duration: .15}">
 
-      <m-card class="shadow-lg text-xs" v-bind="$attrs">
+      <m-card class="shadow-lg text-[.6rem] sm:text-xs" v-bind="$attrs">
          <slot name="content">   
             Content
          </slot>

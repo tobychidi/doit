@@ -10,10 +10,10 @@ const toggleDark = useToggle(isDark);
 <template>
    <button @click="toggleDark()">
       <span v-show="isDark">
-         <img :src="logo" class="h-10" alt="Doit">
+         <img :src="logo" class="h-8 sm:h-10" alt="Doit">
       </span>
       <span v-show="!isDark">
-         <img :src="logoDark" class="h-10" alt="Doit">
+         <img :src="logoDark" class="h-8 sm:h-10" alt="Doit">
       </span>
    </button>
 </template>

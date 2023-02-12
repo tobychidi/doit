@@ -7,7 +7,7 @@ declare global{
       done: boolean;
    }
 
-   interface TaskList {
+   interface Tasklist {
       title: string;
       tasks: Task[];
    }

@@ -8,7 +8,7 @@ const props = withDefaults(
       placeholder: "Placeholder",
    }
 );
-const emit = defineEmits(["update:value", "enter"]);
+const emit = defineEmits(["update:value", "enter", "ctrlEnter"]);
 
 const mValue = useVModel(props, "value", emit);
 const maxCharacterLength = ref(96)
@@ -16,7 +16,12 @@ const maxRows = ref(4)
 const characterCount = ref(0)
 const rows = ref(1)
 
-const inFocus = ref(false)
+const inputRef = ref(null)
+const { focused } = useFocus(inputRef)
+
+const { ctrl_enter } = useMagicKeys()
+
+whenever(ctrl_enter, () => { if (focused.value) emit("ctrlEnter") })
 
 watchEffect(() => {
    characterCount.value = mValue.value?.length ?? 0
@@ -32,22 +37,17 @@ watchEffect(() => {
    }
 })
 
-function handleFocus() {
-   inFocus.value = true
-}
-function handleBlur() {
-   inFocus.value = false
-}
-function handleEnter(){
+
+function handleEnter() {
    emit("enter")
 }
 </script>
 
 <template>
    <div class="h-full w-full flex flex-col justify-center">
-      <textarea class="w-full p-1 rounded-lg bg-transparent outline-none h-200 resize-none overflow-hidden"
+      <textarea ref="inputRef" class="w-full p-1 rounded-lg bg-transparent outline-none h-200 resize-none overflow-hidden"
          :placeholder="placeholder" v-model="mValue" :rows="rows" :maxlength="maxCharacterLength"
-         @keypress.enter.prevent="handleEnter" @focus="handleFocus" @blur="handleBlur" />
+         @keypress.enter.prevent="handleEnter" />
       <!-- <div class="text-xs text-light-600 self-end transition" :class="{
          'opacity-0 -translate-y-1': !inFocus
       }">
