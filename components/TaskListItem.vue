@@ -29,7 +29,6 @@ function createNewTask(task: Task) {
 function resetTasklist() {
    title.value = "",
       tasks.value = []
-   console.log("reset?")
 }
 function handleEnter() {
    emit("enter", currentTasklist.value);
