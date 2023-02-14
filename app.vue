@@ -19,48 +19,6 @@ const swipeTarget = ref(null)
 
 const dragOptions = useDragOptions()
 
-const tab = ref(1)
-const swipeDistance = ref("-100%")
-const { isSwiping, distanceX } = usePointerSwipe(swipeTarget, {
-   onSwipe(e) {
-      swipeDistance.value = -distanceX.value + "px"
-   },
-   onSwipeEnd(e, direction) {
-      if (direction == "LEFT") {
-         if (tab.value == 0) {
-            swipeDistance.value = "-100%"
-            tab.value++
-            return
-         }
-         if (tab.value == 1) {
-            swipeDistance.value = "-200%"
-            tab.value++
-            return
-         }
-         if (tab.value == 2) {
-            swipeDistance.value = "-200%"
-            return
-         }
-      }
-      if (direction == "RIGHT") {
-         if (tab.value == 0) {
-            swipeDistance.value = "0%"
-            return
-         }
-         if (tab.value == 1) {
-            swipeDistance.value = "0%"
-            tab.value--
-            return
-         }
-         if (tab.value == 2) {
-            swipeDistance.value = "-100%"
-            tab.value--
-            return
-         }
-      }
-   }
-})
-
 function createNewNote(note: Note) {
    if (note.note) notes.value.push(note);
 }
@@ -133,11 +91,8 @@ function handleTasksDoneAdd(e: any) {
          <toggle-logo />
       </header>
       <!-- <page-loader /> -->
-      <main ref="swipeTarget" class="h-full w-full md:max-w-6xl flex-1 overflow-hidden"
-         :class="{ 'select-none': isSwiping }">
-         <div class="w-full h-full flex justify-between md:gap-8 lg:gap-12"
-            :class="{ 'transition-all duration-200 ease-linear': !isSwiping }"
-            :style="{ transform: `translateX(${swipeDistance})` }">
+      <main ref="swipeTarget" class="h-full w-full md:max-w-6xl flex-1 overflow-hidden">
+         <div class="w-full h-full flex justify-between md:gap-8 lg:gap-12">
             <list-board>
                <note-item clear-on-enter hide-menu @enter="createNewNote" />
                <draggable v-model:list="notes" :key="notesChange" item-key="note" v-bind="dragOptions"
@@ -178,7 +133,7 @@ function handleTasksDoneAdd(e: any) {
          </div>
       </main>
       <footer class="w-full">
-         <mobile-nav />
+         <mobile-nav class="sm:hidden" />
       </footer>
    </div>
 </template>
