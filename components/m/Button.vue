@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const props = withDefaults(defineProps<{
-   type?: "primary" | "default" | "none"| string;
+   type?: "primary" | "default" | "transparent" | string;
 }>(), {
    type: "default"
 })
@@ -10,6 +10,7 @@ const props = withDefaults(defineProps<{
       :class="{ 
          'bg-green-700 hover:bg-green-800 text-white border-white dark:border-white': type == 'primary',
          'bg-light-200 hover:bg-light-300 dark:bg-dark-500 dark:hover:bg-dark-700': type == 'default',
+         'bg-transparent shadow-none border-none': type == 'transparent',
       }">
       <slot />
    </button>

@@ -11,7 +11,7 @@ function handleChangeTab(newTab: string){
 }
 </script>
 <template>
-   <m-card class="bg-light-100 dark:bg-dark-700">
+   <m-card class="bg-light-100 dark:bg-dark-700 shadow-lg">
       <div class="w-full flex justify-around gap-2">
          <m-tab-button name="notes" :active-tab="activeTab" @change-tab="handleChangeTab">
             <template #icon>

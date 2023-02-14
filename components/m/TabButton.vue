@@ -13,7 +13,7 @@ const emit = defineEmits<{
 function handleClick(){
    emit("changeTab", props.name)
 }
-const tabType = computed(() => props.name == props.activeTab ? "primary" : "default");
+const tabType = computed(() => props.name == props.activeTab ? "primary" : "transparent");
 </script>
 <template>
    <m-button :type="tabType" @click="handleClick">
