@@ -1,12 +1,15 @@
 <script lang="ts" setup>
 const props = withDefaults(defineProps<{
-   defaultTab?: string;
+   activeTab?: string;
 }>(), {
-   defaultTab: "tasks"
+   activeTab: "tasks"
 })
-const activeTab = ref(props.defaultTab)
 
-function handleChangeTab(newTab: string){
+const emit = defineEmits(["update:activeTab"])
+
+const activeTab = useVModel(props, "activeTab", emit)
+
+function handleChangeTab(newTab: string) {
    activeTab.value = newTab
 }
 </script>
@@ -25,7 +28,7 @@ function handleChangeTab(newTab: string){
             </template>
             Tasks
          </m-tab-button>
-         <m-tab-button name="taskDone" :active-tab="activeTab" @change-tab="handleChangeTab">
+         <m-tab-button name="tasksDone" :active-tab="activeTab" @change-tab="handleChangeTab">
             <template #icon>
                <Icon class="text-xl" name="eva:checkmark-square-2-fill" />
             </template>

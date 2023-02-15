@@ -17,6 +17,8 @@ const tasklistMode = ref<Tasklist | null>(null)
 
 const swipeTarget = ref(null)
 
+const activeTab = ref("tasks")
+
 const dragOptions = useDragOptions()
 
 function createNewNote(note: Note) {
@@ -92,7 +94,8 @@ function handleTasksDoneAdd(e: any) {
       </header>
       <!-- <page-loader /> -->
       <main ref="swipeTarget" class="h-full w-full md:max-w-6xl flex-1 overflow-hidden">
-         <div class="w-full h-full flex justify-between md:gap-8 lg:gap-12">
+         <div class="w-full h-full flex justify-between md:gap-8 lg:gap-12 transition sm:transform-none"
+            :class="{ 'translate-x-[-100%]': activeTab == 'tasks', 'translate-x-[-200%]': activeTab == 'tasksDone' }">
             <list-board>
                <note-item clear-on-enter hide-menu @enter="createNewNote" />
                <draggable v-model:list="notes" :key="notesChange" item-key="note" v-bind="dragOptions"
@@ -133,7 +136,7 @@ function handleTasksDoneAdd(e: any) {
          </div>
       </main>
       <footer class="w-full">
-         <mobile-nav class="sm:hidden" />
+         <mobile-nav class="sm:hidden" v-model:active-tab="activeTab" />
       </footer>
    </div>
 </template>
