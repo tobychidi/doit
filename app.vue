@@ -138,7 +138,6 @@ function handleTasksDoneAdd(e: any) {
                </list-board>
             </div>
          </main>
-         {{ height }}
          <footer class="w-full">
             <mobile-nav class="sm:hidden" v-model:active-tab="activeTab" />
          </footer>
