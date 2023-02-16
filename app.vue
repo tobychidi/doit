@@ -15,8 +15,7 @@ const tasksChange = ref(0)
 const tasksDoneChange = ref(0)
 const tasklistMode = ref<Tasklist | null>(null)
 
-const { height } = useWindowSize()
-
+const { height } = useWindowSize({ initialHeight: 300 })
 const swipeTarget = ref(null)
 
 const activeTab = ref("tasks")
@@ -85,11 +84,11 @@ function handleTasksDoneAdd(e: any) {
 </script>
 
 <template>
-<ClientOnly>
+   <ClientOnly>
       <div
          class="w-full box-border p-10 lg:p-20 text-dark-500 dark:bg-dark-600 dark:text-white flex flex-col gap-8 items-center justify-center transition overflow-hidden"
-         :style="{ minHeight: height + 'px' }">
-      
+         :style="{ height: height + 'px' }">
+
          <Head>
             <Title>Doit by Navato Labs</Title>
          </Head>
@@ -111,7 +110,7 @@ function handleTasksDoneAdd(e: any) {
                      </template>
                   </draggable>
                </list-board>
-      
+
                <list-board>
                   <task-list-item v-if="tasklistMode" :tasklist="tasklistMode" clear-on-enter hide-menu
                      @enter="createNewTasklist" @ctrl-enter="convertToTask" />
@@ -126,7 +125,7 @@ function handleTasksDoneAdd(e: any) {
                      </template>
                   </draggable>
                </list-board>
-      
+
                <list-board>
                   <draggable v-model:list="tasksDone" :key="tasksDoneChange" item-key="task" v-bind="dragOptions"
                      @add="handleTasksDoneAdd">
@@ -144,7 +143,7 @@ function handleTasksDoneAdd(e: any) {
             <mobile-nav class="sm:hidden" v-model:active-tab="activeTab" />
          </footer>
       </div>
-</ClientOnly>
+   </ClientOnly>
 </template>
 
 <style>
