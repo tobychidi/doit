@@ -15,6 +15,8 @@ const tasksChange = ref(0)
 const tasksDoneChange = ref(0)
 const tasklistMode = ref<Tasklist | null>(null)
 
+const {height} = useWindowSize()
+
 const swipeTarget = ref(null)
 
 const activeTab = ref("tasks")
@@ -84,7 +86,7 @@ function handleTasksDoneAdd(e: any) {
 
 <template>
    <div
-      class="w-full h-screen box-border p-10 lg:p-20 text-dark-500 dark:bg-dark-600 dark:text-white flex flex-col gap-8 items-center justify-center transition overflow-hidden">
+      class="w-full box-border p-10 lg:p-20 text-dark-500 dark:bg-dark-600 dark:text-white flex flex-col gap-8 items-center justify-center transition overflow-hidden" :style="{height: height+'px'}">
 
       <Head>
          <Title>Doit by Navato Labs</Title>
