@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import "@fontsource/numans";
+import { SwiperOptions } from "swiper";
 import draggable from "vuedraggable";
 
 const tasklist: Tasklist = {
@@ -19,14 +20,16 @@ const activeTab = ref("tasks")
 
 const dragOptions = useDragOptions()
 
-const swiperOptions = {
+const swiperOptions: SwiperOptions = {
+   noSwiping: true,
+   noSwipingClass: "handle",
    slidesPerView: 1,
    spaceBetween: 20,
    breakpoints: {
-      480: {
+      640: {
          slidesPerView: 2
       },
-      960: {
+      1180: {
          slidesPerView: 3
       },
    }

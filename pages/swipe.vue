@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { SwiperOptions } from "swiper";
 
 const swiperOptions = {
    slidesPerView: 1,
