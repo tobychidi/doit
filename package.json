@@ -21,7 +21,7 @@
     "@vueuse/nuxt": "^9.13.0",
     "motion": "^10.15.5",
     "nuxt-swiper": "^1.0.0",
-    "pinia": "^2.0.31",
+    "pinia": "^2.0.32",
     "prisma": "^4.10.1",
     "vuedraggable": "^4.1.0"
   }

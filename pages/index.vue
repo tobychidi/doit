@@ -19,6 +19,19 @@ const activeTab = ref("tasks")
 
 const dragOptions = useDragOptions()
 
+const swiperOptions = {
+   slidesPerView: 1,
+   spaceBetween: 20,
+   breakpoints: {
+      480: {
+         slidesPerView: 2
+      },
+      960: {
+         slidesPerView: 3
+      },
+   }
+}
+
 function createNewNote(note: Note) {
    if (note.note) notes.value.push(note);
 }
@@ -82,44 +95,51 @@ function handleTasksDoneAdd(e: any) {
 </script>
 <template>
    <main class="h-full w-full md:max-w-6xl flex-1 overflow-hidden">
-      <div class="w-full h-full flex justify-between md:gap-8 lg:gap-12 transition sm:transform-none"
-         :class="{ 'translate-x-[-100%]': activeTab == 'tasks', 'translate-x-[-200%]': activeTab == 'tasksDone' }">
-         <list-board>
-            <note-item clear-on-enter hide-menu @enter="createNewNote" />
-            <draggable v-model:list="notes" :key="notesChange" item-key="note" v-bind="dragOptions" @add="handleNotesAdd">
-               <template #item="{ element: note }">
-                  <li>
-                     <note-item :note="note" :key="note" />
-                  </li>
-               </template>
-            </draggable>
-         </list-board>
+      <swiper v-bind="swiperOptions" class="w-full h-full">
+         <swiper-slide>
+            <list-board>
+               <note-item clear-on-enter hide-menu @enter="createNewNote" />
+               <draggable v-model:list="notes" :key="notesChange" item-key="note" v-bind="dragOptions"
+                  @add="handleNotesAdd">
+                  <template #item="{ element: note }">
+                     <li>
+                        <note-item :note="note" :key="note" />
+                     </li>
+                  </template>
+               </draggable>
+            </list-board>
+         </swiper-slide>
 
-         <list-board>
-            <task-list-item v-if="tasklistMode" :tasklist="tasklistMode" clear-on-enter hide-menu
-               @enter="createNewTasklist" @ctrl-enter="convertToTask" />
-            <task-item v-else clear-on-enter hide-menu @enter="createNewTask" @ctrl-enter="convertToTasklist" />
-            <draggable v-model:list="tasks" :key="tasksChange" item-key="task" v-bind="dragOptions" @add="handleTasksAdd">
-               <template #item="{ element: task }">
-                  <li v-if="task.task || task.tasks">
-                     <task-item v-if="task.task" :task="task" />
-                     <task-list-item v-if="task.tasks" :tasklist="task" />
-                  </li>
-               </template>
-            </draggable>
-         </list-board>
+         <swiper-slide>
+            <list-board>
+               <task-list-item v-if="tasklistMode" :tasklist="tasklistMode" clear-on-enter hide-menu
+                  @enter="createNewTasklist" @ctrl-enter="convertToTask" />
+               <task-item v-else clear-on-enter hide-menu @enter="createNewTask" @ctrl-enter="convertToTasklist" />
+               <draggable v-model:list="tasks" :key="tasksChange" item-key="task" v-bind="dragOptions"
+                  @add="handleTasksAdd">
+                  <template #item="{ element: task }">
+                     <li v-if="task.task || task.tasks">
+                        <task-item v-if="task.task" :task="task" />
+                        <task-list-item v-if="task.tasks" :tasklist="task" />
+                     </li>
+                  </template>
+               </draggable>
+            </list-board>
+         </swiper-slide>
 
-         <list-board>
-            <draggable v-model:list="tasksDone" :key="tasksDoneChange" item-key="task" v-bind="dragOptions"
-               @add="handleTasksDoneAdd">
-               <template #item="{ element: task, }">
-                  <li>
-                     <task-item :task="task" />
-                  </li>
-               </template>
-            </draggable>
-         </list-board>
-      </div>
+         <swiper-slide>
+            <list-board>
+               <draggable v-model:list="tasksDone" :key="tasksDoneChange" item-key="task" v-bind="dragOptions"
+                  @add="handleTasksDoneAdd">
+                  <template #item="{ element: task, }">
+                     <li>
+                        <task-item :task="task" />
+                     </li>
+                  </template>
+               </draggable>
+            </list-board>
+         </swiper-slide>
+      </swiper>
    </main>
    <mobile-nav class="sm:hidden" v-model:active-tab="activeTab" />
 </template>

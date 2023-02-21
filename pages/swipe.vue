@@ -1,8 +1,26 @@
+<script lang="ts" setup>
+import { SwiperOptions } from "swiper";
+
+const swiperOptions = {
+   slidesPerView: 1,
+   spaceBetween: 10,
+   breakpoints: {
+      420:{
+         slidesPerView: 2
+      },
+      640: {
+         slidesPerView: 3
+      },
+      1280:{
+         slidesPerView: 4
+      }
+   }
+}
+
+</script>
 <template>
    <div>
-      <swiper :slides-per-view="3" :breakpoints="{
-         
-      }" :space-between="10" class="h-60 w-[80vw] text-white text-center text-lg">
+      <swiper v-bind="swiperOptions" class="h-60 w-[90vw] md:w-[80vw] text-white text-center text-lg">
          <swiper-slide class="bg-red-600 rounded-lg p-2">
             <div class="h-full w-full flex justify-center items-center">
                Help me
