@@ -16,7 +16,7 @@ function handleClick(){
 const tabType = computed(() => props.name == props.activeTab ? "primary" : "transparent");
 </script>
 <template>
-   <m-button :type="tabType" @click="handleClick">
+   <m-button class="active:scale-100" :type="tabType" @click="handleClick">
       <div class="flex flex-col text-xs items-center justify-center gap-1">
          <slot name="icon" />
          <slot>Tab button</slot>

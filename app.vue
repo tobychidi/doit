@@ -4,7 +4,7 @@ import "@fontsource/numans";
 
 <template>
    <div
-      class="w-full h-[100svh] box-border p-10 lg:p-20 text-dark-500 dark:bg-dark-600 dark:text-white flex flex-col gap-8 items-center justify-center transition overflow-hidden">
+      class="w-full h-[100svh] box-border p-7 lg:p-20 text-dark-500 dark:bg-dark-600 dark:text-white flex flex-col gap-8 items-center justify-center transition overflow-hidden">
 
       <Head>
          <Title>Doit by Navato Labs</Title>
