@@ -22,7 +22,7 @@ const dragOptions = useDragOptions()
 
 const swiperOptions: SwiperOptions = {
    noSwiping: true,
-   noSwipingClass: "handle",
+   noSwipingSelector: ".handle",
    slidesPerView: 1,
    spaceBetween: 20,
    breakpoints: {
@@ -101,6 +101,7 @@ function handleTasksDoneAdd(e: any) {
       <swiper v-bind="swiperOptions" class="w-full h-full">
          <swiper-slide>
             <list-board>
+               <h3 class="text-xl">Notes</h3>
                <note-item clear-on-enter hide-menu @enter="createNewNote" />
                <draggable v-model:list="notes" :key="notesChange" item-key="note" v-bind="dragOptions"
                   @add="handleNotesAdd">
@@ -115,6 +116,7 @@ function handleTasksDoneAdd(e: any) {
 
          <swiper-slide>
             <list-board>
+               <h3 class="text-xl">Tasks</h3>
                <task-list-item v-if="tasklistMode" :tasklist="tasklistMode" clear-on-enter hide-menu
                   @enter="createNewTasklist" @ctrl-enter="convertToTask" />
                <task-item v-else clear-on-enter hide-menu @enter="createNewTask" @ctrl-enter="convertToTasklist" />
@@ -132,6 +134,7 @@ function handleTasksDoneAdd(e: any) {
 
          <swiper-slide>
             <list-board>
+               <h3 class="text-xl">Done</h3>
                <draggable v-model:list="tasksDone" :key="tasksDoneChange" item-key="task" v-bind="dragOptions"
                   @add="handleTasksDoneAdd">
                   <template #item="{ element: task, }">
