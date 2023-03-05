@@ -9,7 +9,7 @@ const toggleChecked = useToggle(checked)
 
 </script>
 <template>
-   <button class="text-xl sm:text-3xl active:scale-95" @click="toggleChecked()">
+   <button class="text-2xl sm:text-3xl active:scale-95" @click="toggleChecked()">
       <span v-if="checked">
          <Icon name="eva:checkmark-square-2-fill" />
       </span>
