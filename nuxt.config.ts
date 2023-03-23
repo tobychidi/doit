@@ -1,6 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-   modules: ["@nuxtjs/tailwindcss", "@vueuse/nuxt", "nuxt-icon", "nuxt-swiper"],
+   modules: [
+      "@nuxtjs/tailwindcss",
+      "@vueuse/nuxt",
+      "nuxt-icon",
+      "nuxt-swiper",
+      "@nuxt/devtools",
+      "@nuxt/image-edge",
+   ],
    tailwindcss: {
       config: {
          darkMode: "class",

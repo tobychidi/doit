@@ -22,4 +22,4 @@ const tabType = computed(() => props.name == props.activeTab ? "primary" : "tran
          <slot>Tab button</slot>
       </div>
    </m-button>
-</template>
+</template>    

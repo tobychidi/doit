@@ -3,12 +3,9 @@ import "@fontsource/numans";
 import { SwiperOptions } from "swiper";
 import draggable from "vuedraggable";
 
-const tasklist: Tasklist = {
-   title: "Tasklist",
-   tasks: [{ task: "Eat food", done: false }],
-};
+const { data: notes, refresh: notesRefresh } = useFetch("/api/notes")
 
-const notes = useLocalStorage<Array<Note>>("notes", []);
+// const notes = useLocalStorage<Array<Note>>("notes", []);
 const tasks = useLocalStorage<Array<Task | Tasklist>>("tasks", []);
 const tasksDone = useLocalStorage<Array<Task | Tasklist>>("tasksDone", []);
 const notesChange = ref(0)
@@ -35,8 +32,20 @@ const swiperOptions: SwiperOptions = {
    }
 }
 
-function createNewNote(note: Note) {
-   if (note.note) notes.value.push(note);
+async function createNewNote(note: Note) {
+   if (note.note) {
+      const { error } = await useFetch("/api/notes", { method: "post", body: note })
+      if (!error.value) {
+         notesRefresh()
+      }
+   }
+}
+
+async function deleteNote(note: Note) {
+   const { error } = await useFetch("/api/notes", { method: "delete", body: note })
+   if (!error.value) {
+      notesRefresh()
+   }
 }
 function createNewTask(task: Task) {
    if (task.task) tasks.value.push(task);
@@ -107,7 +116,7 @@ function handleTasksDoneAdd(e: any) {
                   @add="handleNotesAdd">
                   <template #item="{ element: note }">
                      <li>
-                        <note-item :note="note" :key="note" />
+                        <note-item :note="note" :key="note" @delete="deleteNote(note)" />
                      </li>
                   </template>
                </draggable>
