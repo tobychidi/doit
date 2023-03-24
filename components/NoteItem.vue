@@ -8,6 +8,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
    (e: "enter", payload: Note): void;
+   (e: "delete"): void;
 }>();
 
 const noteValue = ref(props.note?.note)
@@ -21,6 +22,10 @@ function handleEnter() {
    if (props.clearOnEnter) {
       noteValue.value = ""
    }
+}
+
+function handleDelete() {
+   emit("delete")
 }
 </script>
 <template>
@@ -41,7 +46,7 @@ function handleEnter() {
                      <Icon class="text-green-500" name="ic:round-push-pin" />
                   </template>
                </menu-item>
-               <menu-item>
+               <menu-item @click="handleDelete">
                   Delete
                   <template #icon>
                      <Icon class="text-red-500" name="eva:trash-2-fill" />

@@ -16,10 +16,10 @@ function handleClick(){
 const tabType = computed(() => props.name == props.activeTab ? "primary" : "transparent");
 </script>
 <template>
-   <m-button :type="tabType" @click="handleClick">
+   <m-button :type="tabType" no-push @click="handleClick">
       <div class="flex flex-col text-xs items-center justify-center gap-1">
          <slot name="icon" />
          <slot>Tab button</slot>
       </div>
    </m-button>
-</template>
+</template>    
