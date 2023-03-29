@@ -1,5 +1,6 @@
 declare global{
    interface Note {
+      id?: number;
       note: string;
    }
    interface Task {

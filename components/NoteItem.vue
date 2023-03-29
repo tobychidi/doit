@@ -13,6 +13,10 @@ const emit = defineEmits<{
 
 const noteValue = ref(props.note?.note)
 
+const popover = ref<any| null>(null)
+
+const loading = ref(false)
+
 
 function handleEnter() {
    emit("enter", {
@@ -24,14 +28,21 @@ function handleEnter() {
    }
 }
 
-function handleDelete() {
-   emit("delete")
+async function handleDelete() {
+   popover.value.hidePopover()
+   loading.value = true
+   const { error } = await useFetch(`/api/notes/${props.note?.id}`, { method: "delete" })
+   if (!error.value) {
+      await refreshNuxtData("notes")
+   }
+   await nextTick()
+   loading.value = false
 }
 </script>
 <template>
-   <m-card>
+   <m-card :class="{'loading': loading}">
       <div class="h-full w-full flex items-center gap-2 justify-between">
-         <m-popover v-if="!hideMenu">
+         <m-popover ref="popover" v-if="!hideMenu">
             <m-drag-handle />
             <template #content>
                <menu-item>
@@ -58,3 +69,19 @@ function handleDelete() {
       </div>
    </m-card>
 </template>
+
+<style lang="scss" scoped>
+
+@keyframes pulse {
+   from{
+      opacity: .5
+   }
+   to{
+      opacity: .1
+   }
+}
+.loading{
+   opacity: 0;
+   animation: pulse 650ms ease-in-out infinite;
+}
+</style>

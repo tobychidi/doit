@@ -3,7 +3,9 @@ import "@fontsource/numans";
 import { SwiperOptions } from "swiper";
 import draggable from "vuedraggable";
 
-const { data: notes, refresh: notesRefresh } = useFetch("/api/notes")
+const { data: notes } = useAsyncData("notes", () => $fetch("/api/notes"), {
+   transform: (_notes) => _notes.data
+})
 
 // const notes = useLocalStorage<Array<Note>>("notes", []);
 const tasks = useLocalStorage<Array<Task | Tasklist>>("tasks", []);
@@ -36,17 +38,11 @@ async function createNewNote(note: Note) {
    if (note.note) {
       const { error } = await useFetch("/api/notes", { method: "post", body: note })
       if (!error.value) {
-         notesRefresh()
+         refreshNuxtData("notes")
       }
    }
 }
 
-async function deleteNote(note: Note) {
-   const { error } = await useFetch("/api/notes", { method: "delete", body: note })
-   if (!error.value) {
-      notesRefresh()
-   }
-}
 function createNewTask(task: Task) {
    if (task.task) tasks.value.push(task);
 }
@@ -116,7 +112,7 @@ function handleTasksDoneAdd(e: any) {
                   @add="handleNotesAdd">
                   <template #item="{ element: note }">
                      <li>
-                        <note-item :note="note" :key="note" @delete="deleteNote(note)" />
+                        <note-item :note="note" :key="note" />
                      </li>
                   </template>
                </draggable>
