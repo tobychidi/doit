@@ -3,12 +3,15 @@ import "@fontsource/numans";
 import { SwiperOptions } from "swiper";
 import draggable from "vuedraggable";
 
-const { data: notes } = useAsyncData("notes", () => $fetch("/api/notes"), {
-   transform: (_notes) => _notes.data
+const { data: notes } = useAsyncData("notes", () => $fetch("/api/notes", { method: "GET" }), {
+   transform: (_notes) => _notes.data,
+})
+const { data: tasks } = useAsyncData("tasks", () => $fetch("/api/tasks", { method: "GET" }), {
+   transform: (_tasks) => [..._tasks.data.tasks, ..._tasks.data.tasklists],
 })
 
 // const notes = useLocalStorage<Array<Note>>("notes", []);
-const tasks = useLocalStorage<Array<Task | Tasklist>>("tasks", []);
+// const tasks = useLocalStorage<Array<Task | Tasklist>>("tasks", []);
 const tasksDone = useLocalStorage<Array<Task | Tasklist>>("tasksDone", []);
 const notesChange = ref(0)
 const tasksChange = ref(0)
@@ -36,19 +39,30 @@ const swiperOptions: SwiperOptions = {
 
 async function createNewNote(note: Note) {
    if (note.note) {
-      const { error } = await useFetch("/api/notes", { method: "post", body: note })
+      const { error } = await useFetch("/api/notes", { method: "POST", body: note })
       if (!error.value) {
          refreshNuxtData("notes")
       }
    }
 }
 
-function createNewTask(task: Task) {
-   if (task.task) tasks.value.push(task);
+async function createNewTask(task: Task) {
+   if (task.task) {
+      const { error } = await useFetch("/api/tasks", { method: "POST", body: task })
+      if (!error.value) {
+         refreshNuxtData("tasks")
+      }
+   }
 }
-function createNewTasklist(tasklist: Tasklist) {
-   if (tasklist.tasks) tasks.value.push(tasklist);
+async function createNewTasklist(tasklist: Tasklist) {
+   if (tasklist.tasks) {
+      const { error } = await useFetch("/api/tasks", { method: "POST", body: tasklist })
+      if (!error.value) {
+         refreshNuxtData("tasks")
+      }
+   }
 }
+
 
 function convertToTask(tasklist: Tasklist) {
    tasklistMode.value = null
@@ -108,7 +122,7 @@ function handleTasksDoneAdd(e: any) {
             <list-board>
                <h3 class="text-xl">Notes</h3>
                <note-item clear-on-enter hide-menu @enter="createNewNote" />
-               <draggable v-model:list="notes" :key="notesChange" item-key="note" v-bind="dragOptions"
+               <draggable v-if="notes" v-model:list="notes" :key="notesChange" item-key="note" v-bind="dragOptions"
                   @add="handleNotesAdd">
                   <template #item="{ element: note }">
                      <li>

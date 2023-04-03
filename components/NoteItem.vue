@@ -13,10 +13,13 @@ const emit = defineEmits<{
 
 const noteValue = ref(props.note?.note)
 
-const popover = ref<any| null>(null)
+const popover = ref<any | null>(null)
 
 const loading = ref(false)
 
+watchThrottled(noteValue, async () => {
+   await useFetch(`/api/notes/${props.note?.id}`, { method: "PATCH", body: { note: noteValue.value } })
+}, { throttle: 1500 })
 
 function handleEnter() {
    emit("enter", {
@@ -40,7 +43,7 @@ async function handleDelete() {
 }
 </script>
 <template>
-   <m-card :class="{'loading': loading}">
+   <m-card :class="{ 'pulsing': loading }">
       <div class="h-full w-full flex items-center gap-2 justify-between">
          <m-popover ref="popover" v-if="!hideMenu">
             <m-drag-handle />
@@ -71,16 +74,17 @@ async function handleDelete() {
 </template>
 
 <style lang="scss" scoped>
-
 @keyframes pulse {
-   from{
+   from {
       opacity: .5
    }
-   to{
+
+   to {
       opacity: .1
    }
 }
-.loading{
+
+.pulsing {
    opacity: 0;
    animation: pulse 650ms ease-in-out infinite;
 }

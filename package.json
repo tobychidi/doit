@@ -8,9 +8,9 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@nuxt/image-edge": "1.0.0-27991759.1a5eea1",
-    "@nuxtjs/tailwindcss": "^6.6.4",
-    "nuxt": "^3.3.2",
+    "@nuxt/image-edge": "1.0.0-28008586.381b906",
+    "@nuxtjs/tailwindcss": "^6.6.5",
+    "nuxt": "^3.3.3",
     "nuxt-icon": "^0.3.3"
   },
   "dependencies": {
@@ -18,13 +18,13 @@
     "@fontsource/numans": "^4.5.10",
     "@nuxt/devtools": "^0.3.1",
     "@pinia/nuxt": "^0.4.7",
-    "@prisma/client": "^4.11.0",
+    "@prisma/client": "^4.12.0",
     "@vueuse/core": "^9.13.0",
     "@vueuse/nuxt": "^9.13.0",
     "motion": "^10.15.5",
     "nuxt-swiper": "^1.0.1",
     "pinia": "^2.0.33",
-    "prisma": "^4.11.0",
+    "prisma": "^4.12.0",
     "sass": "^1.60.0",
     "vuedraggable": "^4.1.0"
   }
