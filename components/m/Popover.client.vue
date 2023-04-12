@@ -30,6 +30,10 @@ function hidePopover() {
 onClickOutside(floating, () => {
    hidePopover()
 })
+
+defineExpose({
+   hidePopover
+})
 </script>
 <template>
    <div ref="reference" @click="showPopover()">

@@ -1,15 +1,18 @@
 <script lang="ts" setup>
 import "@fontsource/numans";
 import { SwiperOptions } from "swiper";
-import draggable from "vuedraggable";
+import { Sortable } from "sortablejs-vue3";
 
-const { data: notes, refresh: notesRefresh } = useFetch("/api/notes")
+const { data: notes } = useAsyncData("notes", () => $fetch("/api/notes", { method: "GET" }), {
+   transform: (_notes) => _notes.data,
+})
+const { data: tasks } = useAsyncData("tasks", () => $fetch("/api/tasks", { method: "GET" }), {
+   transform: (_tasks) => [..._tasks.data.tasks, ..._tasks.data.tasklists],
+})
 
-// const notes = useLocalStorage<Array<Note>>("notes", []);
-const tasks = useLocalStorage<Array<Task | Tasklist>>("tasks", []);
 const tasksDone = useLocalStorage<Array<Task | Tasklist>>("tasksDone", []);
 const notesChange = ref(0)
-const tasksChange = ref(0)
+const tasksChange = useTasksChange()
 const tasksDoneChange = ref(0)
 const tasklistMode = ref<Tasklist | null>(null)
 
@@ -34,25 +37,22 @@ const swiperOptions: SwiperOptions = {
 
 async function createNewNote(note: Note) {
    if (note.note) {
-      const { error } = await useFetch("/api/notes", { method: "post", body: note })
+      const { error } = await useFetch("/api/notes", { method: "POST", body: note })
       if (!error.value) {
-         notesRefresh()
+         refreshNuxtData("notes")
       }
    }
 }
 
-async function deleteNote(note: Note) {
-   const { error } = await useFetch("/api/notes", { method: "delete", body: note })
-   if (!error.value) {
-      notesRefresh()
+async function createNewTasklist(tasklist: Tasklist) {
+   if (tasklist.tasks) {
+      const { error } = await useFetch("/api/tasks", { method: "POST", body: tasklist })
+      if (!error.value) {
+         refreshNuxtData("tasks")
+      }
    }
 }
-function createNewTask(task: Task) {
-   if (task.task) tasks.value.push(task);
-}
-function createNewTasklist(tasklist: Tasklist) {
-   if (tasklist.tasks) tasks.value.push(tasklist);
-}
+
 
 function convertToTask(tasklist: Tasklist) {
    tasklistMode.value = null
@@ -111,15 +111,15 @@ function handleTasksDoneAdd(e: any) {
          <swiper-slide>
             <list-board>
                <h3 class="text-xl">Notes</h3>
-               <note-item clear-on-enter hide-menu @enter="createNewNote" />
-               <draggable v-model:list="notes" :key="notesChange" item-key="note" v-bind="dragOptions"
+               <note-item clear-on-enter hide-menu no-update @enter="createNewNote" />
+               <Sortable v-if="notes" v-model:list="notes" :key="notesChange" item-key="note" :options="dragOptions"
                   @add="handleNotesAdd">
                   <template #item="{ element: note }">
-                     <li>
-                        <note-item :note="note" :key="note" @delete="deleteNote(note)" />
+                     <li class="mb-4">
+                        <note-item :note="note" :key="note" />
                      </li>
                   </template>
-               </draggable>
+               </Sortable>
             </list-board>
          </swiper-slide>
 
@@ -128,30 +128,30 @@ function handleTasksDoneAdd(e: any) {
                <h3 class="text-xl">Tasks</h3>
                <task-list-item v-if="tasklistMode" :tasklist="tasklistMode" clear-on-enter hide-menu
                   @enter="createNewTasklist" @ctrl-enter="convertToTask" />
-               <task-item v-else clear-on-enter hide-menu @enter="createNewTask" @ctrl-enter="convertToTasklist" />
-               <draggable v-model:list="tasks" :key="tasksChange" item-key="task" v-bind="dragOptions"
+               <task-item v-else clear-on-enter hide-menu @enter="useCreateNewTask" @ctrl-enter="convertToTasklist" />
+               <Sortable v-model:list="tasks" :key="tasksChange" item-key="task" :options="dragOptions"
                   @add="handleTasksAdd">
                   <template #item="{ element: task }">
-                     <li v-if="task.task || task.tasks">
+                     <li class="mb-4" v-if="task.task || task.tasks">
                         <task-item v-if="task.task" :task="task" />
                         <task-list-item v-if="task.tasks" :tasklist="task" />
                      </li>
                   </template>
-               </draggable>
+               </Sortable>
             </list-board>
          </swiper-slide>
 
          <swiper-slide>
             <list-board>
                <h3 class="text-xl">Done</h3>
-               <draggable v-model:list="tasksDone" :key="tasksDoneChange" item-key="task" v-bind="dragOptions"
+               <Sortable v-model:list="tasksDone" :key="tasksDoneChange" item-key="task" :options="dragOptions"
                   @add="handleTasksDoneAdd">
                   <template #item="{ element: task, }">
-                     <li>
+                     <li class="mb-4">
                         <task-item :task="task" />
                      </li>
                   </template>
-               </draggable>
+               </Sortable>
             </list-board>
          </swiper-slide>
       </swiper>

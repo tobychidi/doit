@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import draggable from "vuedraggable";
+import { Sortable } from "sortablejs-vue3";
 
 const props = defineProps<{
    tasklist?: Tasklist;
@@ -23,8 +23,15 @@ const currentTasklist = computed<Tasklist>(() => ({
    tasks: tasks.value,
 }));
 
+const popover = ref<any | null>(null)
+
+const loading = ref(false)
+
 function createNewTask(task: Task) {
-   if (task.task) tasks.value.push(task);
+   if (task.task) {
+      if (props.tasklist && props.tasklist.id) useCreateNewTask({ ...task, tasklistId: props.tasklist.id })
+      tasks.value.push(task);
+   }
 }
 function resetTasklist() {
    title.value = "",
@@ -43,23 +50,56 @@ function handleCntrlEnter() {
 }
 
 function handleTasksAdd() { }
+
+async function handleDelete() {
+   popover.value.hidePopover()
+   loading.value = true
+   const { error } = await useFetch(`/api/tasks/list/${props.tasklist?.id}`, { method: "delete" })
+   if (!error.value) {
+      await refreshNuxtData("tasks")
+   }
+   await nextTick()
+   loading.value = false
+}
 </script>
 
 <template>
-   <m-card>
+   <m-card :class="{ 'pulsing': loading }">
       <div class="h-full w-full flex items-center gap-2 justify-between">
-         <m-drag-handle v-if="!hideMenu" />
+         <m-popover ref="popover" v-if="!hideMenu">
+            <m-drag-handle />
+            <template #content>
+               <menu-item>
+                  Convert to note
+                  <template #icon>
+                     <Icon name="ic:round-sticky-note-2" />
+                  </template>
+               </menu-item>
+               <menu-item>
+                  Pin
+                  <template #icon>
+                     <Icon class="text-green-500" name="ic:round-push-pin" />
+                  </template>
+               </menu-item>
+               <menu-item @click="handleDelete">
+                  Delete
+                  <template #icon>
+                     <Icon class="text-red-500" name="eva:trash-2-fill" />
+                  </template>
+               </menu-item>
+            </template>
+         </m-popover>
          <m-text-input v-model:value="title" placeholder="New tasklist" @enter="handleEnter"
             @ctrl-enter="handleCntrlEnter" />
       </div>
       <task-item class="bg-light-400 dark:bg-dark-500" clear-on-enter hide-menu @enter="createNewTask"
          @ctrl-enter="handleEnter" />
-      <draggable v-model:list="tasks" :key="tasksChange" item-key="task" v-bind="dragOptions" @add="handleTasksAdd">
+      <Sortable v-model:list="tasks" :key="tasksChange" item-key="task" :options="dragOptions" @add="handleTasksAdd">
          <template #item="{ element: task }">
-            <li>
+            <li class="mb-4">
                <task-item class="bg-light-400 dark:bg-dark-500" :task="task" />
             </li>
          </template>
-      </draggable>
+      </Sortable>
    </m-card>
 </template>

@@ -2,6 +2,7 @@
 const props = defineProps<{
    task?: Task;
    placeholder?: string;
+   noUpdate?: boolean;
    clearOnEnter?: boolean;
    hideMenu?: boolean
 }>();
@@ -19,6 +20,14 @@ const currentTask = computed(() => ({
    done: doneValue.value
 }))
 
+const popover = ref<any | null>(null)
+
+const loading = ref(false)
+
+watchThrottled(currentTask, async () => {
+   if (!props.noUpdate) await useFetch(`/api/tasks/${props.task?.id}`, { method: "PATCH", body: { task: currentTask.value } })
+}, { throttle: 1500 })
+
 function resetTask() {
    taskValue.value = ""
    doneValue.value = false
@@ -33,11 +42,22 @@ function handleEnter() {
 function handleCntrlEnter() {
    emit("ctrlEnter", currentTask.value);
 }
+async function handleDelete() {
+   popover.value.hidePopover()
+   loading.value = true
+   const { error } = await useFetch(`/api/tasks/${props.task?.id}`, { method: "delete" })
+   if (!error.value) {
+      await refreshNuxtData("tasks")
+   }
+   await nextTick()
+   loading.value = false
+   useTasksChange().value++
+}
 </script>
 <template>
-   <m-card>
+   <m-card :class="{ 'pulsing': loading }">
       <div class="h-full w-full flex items-center gap-2 justify-between">
-         <m-popover v-if="!hideMenu">
+         <m-popover ref="popover" v-if="!hideMenu">
             <m-drag-handle />
             <template #content>
                <menu-item>
@@ -52,7 +72,7 @@ function handleCntrlEnter() {
                      <Icon class="text-green-500" name="ic:round-push-pin" />
                   </template>
                </menu-item>
-               <menu-item>
+               <menu-item @click="handleDelete">
                   Delete
                   <template #icon>
                      <Icon class="text-red-500" name="eva:trash-2-fill" />

@@ -15,7 +15,7 @@ model Task {
   task String
   done Boolean
 
-  tasklist   Tasklist? @relation(fields: [tasklistId], references: [id])
+  tasklist   Tasklist? @relation(fields: [tasklistId], references: [id], onDelete: Cascade)
   tasklistId Int?
 
   createdAt DateTime @default(now())
