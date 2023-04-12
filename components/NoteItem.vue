@@ -2,6 +2,7 @@
 const props = defineProps<{
    note?: Note;
    placeholder?: string;
+   noUpdate?: boolean;
    clearOnEnter?: boolean;
    hideMenu?: boolean
 }>()
@@ -18,7 +19,7 @@ const popover = ref<any | null>(null)
 const loading = ref(false)
 
 watchThrottled(noteValue, async () => {
-   await useFetch(`/api/notes/${props.note?.id}`, { method: "PATCH", body: { note: noteValue.value } })
+   if (!props.noUpdate) await useFetch(`/api/notes/${props.note?.id}`, { method: "PATCH", body: { note: noteValue.value } })
 }, { throttle: 1500 })
 
 function handleEnter() {
@@ -73,7 +74,7 @@ async function handleDelete() {
    </m-card>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @keyframes pulse {
    from {
       opacity: .5
