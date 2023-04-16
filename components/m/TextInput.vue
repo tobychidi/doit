@@ -28,7 +28,7 @@ function handleEnter() {
 
 <template>
    <div class="h-full w-full flex flex-col justify-center">
-      <input ref="inputRef" class="w-full p-1 rounded-lg bg-transparent outline-none h-200" :placeholder="placeholder" v-model="mValue"
+      <input ref="inputRef" class="w-full p-1 rounded-lg bg-transparent outline-none" :placeholder="placeholder" v-model="mValue"
          :maxlength="maxlength" @keypress.enter.prevent="handleEnter" />
    </div>
 </template>
