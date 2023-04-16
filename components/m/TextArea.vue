@@ -45,7 +45,7 @@ function handleEnter() {
 
 <template>
    <div class="h-full w-full flex flex-col justify-center">
-      <textarea ref="inputRef" class="w-full p-1 rounded-lg bg-transparent outline-none h-200 resize-none overflow-hidden"
+      <textarea ref="inputRef" class="w-full p-1 rounded-lg bg-transparent outline-none resize-none overflow-hidden"
          :placeholder="placeholder" v-model="mValue" :rows="rows" :maxlength="maxCharacterLength"
          @keypress.enter.prevent="handleEnter" />
       <!-- <div class="text-xs text-light-600 self-end transition" :class="{

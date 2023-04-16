@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import "@fontsource/numans";
+import "@unocss/reset/tailwind.css";
 </script>
 
 <template>

@@ -4,6 +4,7 @@ import { Sortable } from "sortablejs-vue3";
 const props = defineProps<{
    tasklist?: Tasklist;
    clearOnEnter?: boolean;
+   noUpdate?: boolean;
    hideMenu?: boolean;
 }>();
 
@@ -27,10 +28,13 @@ const popover = ref<any | null>(null)
 
 const loading = ref(false)
 
+watchThrottled(currentTasklist, async () => {
+   if (!props.noUpdate) await useFetch(`/api/tasks/list/${props.tasklist?.id}`, { method: "PATCH", body: { title: title.value } })
+}, { throttle: 1500 })
+
 function createNewTask(task: Task) {
    if (task.task) {
       if (props.tasklist && props.tasklist.id) useCreateNewTask({ ...task, tasklistId: props.tasklist.id })
-      tasks.value.push(task);
    }
 }
 function resetTasklist() {

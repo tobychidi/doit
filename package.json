@@ -9,11 +9,12 @@
   },
   "devDependencies": {
     "@nuxt/image-edge": "1.0.0-28020728.5df24eb",
-    "@nuxtjs/tailwindcss": "^6.6.5",
+    "@nuxtjs/tailwindcss": "^6.6.6",
     "@sidebase/nuxt-auth": "0.5.0-rc.0",
     "@tresjs/cientos": "2.0.0-beta.0",
     "@tresjs/core": "2.0.0-beta.4",
-    "nuxt": "^3.4.0",
+    "@unocss/nuxt": "^0.51.4",
+    "nuxt": "^3.4.1",
     "nuxt-icon": "^0.3.3",
     "three": "^0.151.3"
   },
@@ -23,6 +24,7 @@
     "@nuxt/devtools": "^0.4.0",
     "@pinia/nuxt": "^0.4.8",
     "@prisma/client": "^4.12.0",
+    "@unocss/reset": "^0.51.4",
     "@vueuse/core": "^9.13.0",
     "@vueuse/nuxt": "^9.13.0",
     "motion": "^10.15.5",

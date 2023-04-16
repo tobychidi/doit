@@ -6,7 +6,6 @@ export function useDragOptions() {
       handle: ".handle",
       ghostClass: "ghost",
       tag: "ul",
-      // class: "flex flex-col flex-1 gap-4",
    });
    return dragOptions;
 }
