@@ -23,16 +23,17 @@ model Task {
 }
 
 model Tasklist {
-  id    Int    @id @default(autoincrement())
+  id    Int     @id @default(autoincrement())
   title String
   tasks Task[]
+  done  Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Note {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
   note String
 
   createdAt DateTime @default(now())

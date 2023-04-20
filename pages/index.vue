@@ -1,26 +1,30 @@
 <script lang="ts" setup>
 import "@fontsource/numans";
-import { SwiperOptions } from "swiper";
+import type { SwiperOptions } from "swiper";
 import { Sortable } from "sortablejs-vue3";
 
-const { data: notes } = useAsyncData("notes", () => $fetch("/api/notes", { method: "GET" }), {
-   transform: (_notes) => _notes.data,
-})
-const { data: tasks } = useAsyncData("tasks", () => $fetch("/api/tasks", { method: "GET" }), {
-   transform: (_tasks) => [..._tasks.data.tasks, ..._tasks.data.tasklists],
+const { data: notes } = useAsyncData("notes", () => $fetch("/api/notes", { method: "GET" }))
+const { data: allTasks } = useAsyncData("tasks", () => $fetch("/api/tasks", { method: "GET" }))
+
+const tasks = computed(() => {
+   if (allTasks.value) {
+      return [...allTasks.value.tasks.filter(task => !task.done), ...allTasks.value.tasklists.filter(tasklist => !tasklist.done)]
+   }
 })
 
-const tasksDone = useLocalStorage<Array<Task | Tasklist>>("tasksDone", []);
-const notesChange = ref(0)
-const tasksChange = useTasksChange()
-const tasksDoneChange = ref(0)
+const tasksDone = computed(() => {
+   if (allTasks.value) {
+      return [...allTasks.value.tasks.filter(task => task.done), ...allTasks.value.tasklists.filter(tasklist => tasklist.done)]
+   }
+})
+
 const tasklistMode = ref<Tasklist | null>(null)
 
 const activeTab = ref("tasks")
 
 const dragOptions = useDragOptions()
 
-const swiperOptions: SwiperOptions = {
+const swiperOptions/*: SwiperOptions*/ = {
    noSwiping: true,
    noSwipingSelector: ".handle",
    slidesPerView: 1,
@@ -32,27 +36,8 @@ const swiperOptions: SwiperOptions = {
       1180: {
          slidesPerView: 3
       },
-   }
+   },
 }
-
-async function createNewNote(note: Note) {
-   if (note.note) {
-      const { error } = await useFetch("/api/notes", { method: "POST", body: note })
-      if (!error.value) {
-         refreshNuxtData("notes")
-      }
-   }
-}
-
-async function createNewTasklist(tasklist: Tasklist) {
-   if (tasklist.tasks) {
-      const { error } = await useFetch("/api/tasks", { method: "POST", body: tasklist })
-      if (!error.value) {
-         refreshNuxtData("tasks")
-      }
-   }
-}
-
 
 function convertToTask(tasklist: Tasklist) {
    tasklistMode.value = null
@@ -65,43 +50,71 @@ function convertToTasklist(task: Task) {
    }
 }
 
-function handleNotesAdd(e: any) {
-   const newIndex = e.newIndex
-   const oldNotes = notes.value
-   const movedNote = oldNotes[newIndex] as any
-   if (movedNote.task) {
-      oldNotes[newIndex] = { note: movedNote.task }
+async function handleNotesAdd(e: any) {
+   const dataItem = sortableEventItemDataValue(e)
+   if (dataItem.task) {
+      await createNewNote({
+         note: dataItem.task
+      })
+      await deleteTask(dataItem.id)
    }
-   notes.value = new Array(...oldNotes)
-   notesChange.value++
+   if(dataItem.title){
+      const combinedFromTasklist = []
+      combinedFromTasklist.push(dataItem.title)
+      if(dataItem.tasks){
+         dataItem.tasks.forEach((task:Task) => combinedFromTasklist.push(task.task))
+      }
+      await createNewNote({
+         note: combinedFromTasklist.join("-")
+      })
+      await deleteTasklist(dataItem.id)
+   }
 }
 
-function handleTasksAdd(e: any) {
-   const newIndex = e.newIndex
-   const oldTasks = tasks.value
-   const movedTask = oldTasks[newIndex] as any
-   if (movedTask.task) {
-      oldTasks[newIndex] = { ...movedTask, done: false }
+async function handleTasksAdd(e: any) {
+   const dataItem = sortableEventItemDataValue(e)
+   if (dataItem.note) {
+      await createNewTask({
+         task: dataItem.note,
+         done: false
+      })
+      await deleteNote(dataItem.id)
    }
-   if (movedTask.note) {
-      oldTasks[newIndex] = { task: movedTask.note, done: false }
+   if (dataItem.task) {
+      await updateTask({
+         taskId: dataItem.id,
+         task: { done: false, tasklistId: null },
+      })
    }
-   tasks.value = new Array(...oldTasks)
-   tasksChange.value++
+   if (dataItem.title) {
+      await updateTasklist({
+         tasklistId: dataItem.id,
+         tasklist: { done: false }
+      })
+   }
 }
 
-function handleTasksDoneAdd(e: any) {
-   const newIndex = e.newIndex
-   const oldTasks = tasksDone.value
-   const movedTask = oldTasks[newIndex] as any
-   if (movedTask.task) {
-      oldTasks[newIndex] = { ...movedTask, done: true }
+async function handleTasksDoneAdd(e: any) {
+   const dataItem = sortableEventItemDataValue(e)
+   if (dataItem.note) {
+      await createNewTask({
+         task: dataItem.note,
+         done: true
+      })
+      await deleteNote(dataItem.id)
    }
-   if (movedTask.note) {
-      oldTasks[newIndex] = { task: movedTask.note, done: true }
+   if (dataItem.task) {
+      await updateTask({
+         taskId: dataItem.id,
+         task: { done: true, tasklistId: null }
+      })
    }
-   tasksDone.value = new Array(...oldTasks)
-   tasksDoneChange.value++
+   if (dataItem.title) {
+      await updateTasklist({
+         tasklistId: dataItem.id,
+         tasklist: { done: true }
+      })
+   }
 }
 
 </script>
@@ -112,10 +125,10 @@ function handleTasksDoneAdd(e: any) {
             <list-board>
                <h3 class="text-xl">Notes</h3>
                <note-item clear-on-enter hide-menu no-update @enter="createNewNote" />
-               <Sortable v-if="notes" v-model:list="notes" :key="notesChange" item-key="note" :options="dragOptions"
-                  @add="handleNotesAdd">
+               <Sortable v-if="notes" v-model:list="notes.notes" :key="notes.timestamp" item-key="note"
+                  :options="dragOptions" @add="handleNotesAdd">
                   <template #item="{ element: note }">
-                     <li class="mb-4">
+                     <li class="mb-4" :data-value="JSON.stringify(note)">
                         <note-item :note="note" :key="note" />
                      </li>
                   </template>
@@ -126,13 +139,17 @@ function handleTasksDoneAdd(e: any) {
          <swiper-slide>
             <list-board>
                <h3 class="text-xl">Tasks</h3>
-               <task-list-item v-if="tasklistMode" :tasklist="tasklistMode" clear-on-enter hide-menu
+
+               <task-list-item v-if="tasklistMode" :tasklist="tasklistMode" no-update clear-on-enter hide-menu
                   @enter="createNewTasklist" @ctrl-enter="convertToTask" />
-               <task-item v-else clear-on-enter hide-menu @enter="useCreateNewTask" @ctrl-enter="convertToTasklist" />
-               <Sortable v-model:list="tasks" :key="tasksChange" item-key="task" :options="dragOptions"
+
+               <task-item v-else no-update clear-on-enter hide-menu @enter="createNewTask"
+                  @ctrl-enter="convertToTasklist" />
+
+               <Sortable :list="tasks" :key="allTasks?.timestamp" item-key="task" :options="dragOptions"
                   @add="handleTasksAdd">
                   <template #item="{ element: task }">
-                     <li class="mb-4" v-if="task.task || task.tasks">
+                     <li class="mb-4" v-if="task.task || task.tasks" :data-value="JSON.stringify(task)">
                         <task-item v-if="task.task" :task="task" />
                         <task-list-item v-if="task.tasks" :tasklist="task" />
                      </li>
@@ -144,11 +161,12 @@ function handleTasksDoneAdd(e: any) {
          <swiper-slide>
             <list-board>
                <h3 class="text-xl">Done</h3>
-               <Sortable v-model:list="tasksDone" :key="tasksDoneChange" item-key="task" :options="dragOptions"
+               <Sortable :list="tasksDone" :key="allTasks?.timestamp" item-key="task" :options="dragOptions"
                   @add="handleTasksDoneAdd">
                   <template #item="{ element: task, }">
-                     <li class="mb-4">
-                        <task-item :task="task" />
+                     <li class="mb-4" :data-value="JSON.stringify(task)">
+                        <task-item v-if="task.task" :task="task" />
+                        <task-list-item v-if="task.tasks" :tasklist="task" />
                      </li>
                   </template>
                </Sortable>

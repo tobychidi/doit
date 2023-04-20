@@ -3,13 +3,13 @@ export default defineEventHandler(async (event) => {
 
    const updatedtasklist = await readBody(event);
 
-   console.log(updatedtasklist);
+   console.log("updated task list", updatedtasklist);
 
    if (tasklist_id) {
       await prisma.tasklist.update({
          where: { id: tasklist_id },
          data: {
-            ...updatedtasklist.tasklistlist,
+            ...updatedtasklist,
          },
       });
    }

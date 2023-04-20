@@ -1,17 +1,16 @@
 export default defineEventHandler(async (event) => {
-   
    const tasks = await prisma.task.findMany({
-      where:{tasklistId: null, done: false}
-   })
+      where: { tasklistId: null },
+   });
    const tasklists = await prisma.tasklist.findMany({
       include: {
-         tasks: true
-      }
-   })
-   return {
-      data: {
-         tasks,
-         tasklists,
+         tasks: true,
       },
+   });
+
+   return {
+      tasks,
+      tasklists,
+      timestamp: new Date(),
    };
-})
+});

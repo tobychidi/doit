@@ -29,12 +29,19 @@ const popover = ref<any | null>(null)
 const loading = ref(false)
 
 watchThrottled(currentTasklist, async () => {
-   if (!props.noUpdate) await useFetch(`/api/tasks/list/${props.tasklist?.id}`, { method: "PATCH", body: { title: title.value } })
+   if (!props.noUpdate) await updateTasklist({
+      tasklistId: props.tasklist?.id,
+      tasklist: { title: title.value }
+   })
 }, { throttle: 1500 })
 
-function createNewTask(task: Task) {
+function createNewTaskInList(task: Task) {
    if (task.task) {
-      if (props.tasklist && props.tasklist.id) useCreateNewTask({ ...task, tasklistId: props.tasklist.id })
+      if (props.tasklist && props.tasklist.id) {
+         createNewTask({ ...task, tasklistId: props.tasklist.id })
+         return
+      }
+      tasks.value.push(task);
    }
 }
 function resetTasklist() {
@@ -53,15 +60,28 @@ function handleCntrlEnter() {
    emit("ctrlEnter", currentTasklist.value);
 }
 
-function handleTasksAdd() { }
+async function handleTasksAdd(e: any) {
+   const dataItem = sortableEventItemDataValue(e)
+   if (dataItem.note) {
+      await createNewTask({
+         task: dataItem.note,
+         done: false,
+         tasklistId: props.tasklist?.id
+      })
+      await deleteNote(dataItem.id)
+   }
+   if (dataItem.task) {
+      await updateTask({
+         taskId: dataItem.id,
+         task: { ...dataItem, tasklistId: props.tasklist?.id }
+      })
+   }
+}
 
 async function handleDelete() {
    popover.value.hidePopover()
    loading.value = true
-   const { error } = await useFetch(`/api/tasks/list/${props.tasklist?.id}`, { method: "delete" })
-   if (!error.value) {
-      await refreshNuxtData("tasks")
-   }
+   await deleteTasklist(props.tasklist?.id)
    await nextTick()
    loading.value = false
 }
@@ -70,6 +90,7 @@ async function handleDelete() {
 <template>
    <m-card :class="{ 'pulsing': loading }">
       <div class="h-full w-full flex items-center gap-2 justify-between">
+
          <m-popover ref="popover" v-if="!hideMenu">
             <m-drag-handle />
             <template #content>
@@ -93,14 +114,15 @@ async function handleDelete() {
                </menu-item>
             </template>
          </m-popover>
+
          <m-text-input v-model:value="title" placeholder="New tasklist" @enter="handleEnter"
             @ctrl-enter="handleCntrlEnter" />
       </div>
-      <task-item class="bg-light-400 dark:bg-dark-500" clear-on-enter hide-menu @enter="createNewTask"
+      <task-item class="bg-light-400 dark:bg-dark-500" clear-on-enter hide-menu @enter="createNewTaskInList"
          @ctrl-enter="handleEnter" />
       <Sortable v-model:list="tasks" :key="tasksChange" item-key="task" :options="dragOptions" @add="handleTasksAdd">
          <template #item="{ element: task }">
-            <li class="mb-4">
+            <li class="mb-4" :data-value="JSON.stringify(task)">
                <task-item class="bg-light-400 dark:bg-dark-500" :task="task" />
             </li>
          </template>

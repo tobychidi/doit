@@ -7,13 +7,14 @@ declare global{
       id?: number;
       task: string;
       done: boolean;
-      tasklistId?: number;
+      tasklistId?: number | null;
    }
 
    interface Tasklist {
       id?: number;
       title: string;
       tasks: Task[];
+      done?: boolean;
    }
 }
 

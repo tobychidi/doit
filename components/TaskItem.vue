@@ -4,7 +4,7 @@ const props = defineProps<{
    placeholder?: string;
    noUpdate?: boolean;
    clearOnEnter?: boolean;
-   hideMenu?: boolean
+   hideMenu?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -17,45 +17,49 @@ const doneValue = ref(props.task?.done ?? false);
 
 const currentTask = computed(() => ({
    task: taskValue.value,
-   done: doneValue.value
-}))
+   done: doneValue.value,
+}));
 
-const popover = ref<any | null>(null)
+const popover = ref<any | null>(null);
 
-const loading = ref(false)
+const loading = ref(false);
 
-watchThrottled(currentTask, async () => {
-   if (!props.noUpdate) await useFetch(`/api/tasks/${props.task?.id}`, { method: "PATCH", body: { task: currentTask.value } })
-}, { throttle: 1500 })
+watchThrottled(
+   currentTask,
+   async () => {
+      if (!props.noUpdate)
+         await updateTask({
+            taskId: props.task?.id,
+            task: currentTask,
+         })
+   },
+   { throttle: 1500 }
+);
 
 function resetTask() {
-   taskValue.value = ""
-   doneValue.value = false
+   taskValue.value = "";
+   doneValue.value = false;
 }
 function handleEnter() {
    emit("enter", currentTask.value);
 
    if (props.clearOnEnter) {
-      resetTask()
+      resetTask();
    }
 }
 function handleCntrlEnter() {
    emit("ctrlEnter", currentTask.value);
 }
 async function handleDelete() {
-   popover.value.hidePopover()
-   loading.value = true
-   const { error } = await useFetch(`/api/tasks/${props.task?.id}`, { method: "delete" })
-   if (!error.value) {
-      await refreshNuxtData("tasks")
-   }
-   await nextTick()
-   loading.value = false
-   useTasksChange().value++
+   popover.value.hidePopover();
+   loading.value = true;
+   await deleteTask(props.task?.id)
+   await nextTick();
+   loading.value = false;
 }
 </script>
 <template>
-   <m-card :class="{ 'pulsing': loading }">
+   <m-card :class="{ pulsing: loading }">
       <div class="h-full w-full flex items-center gap-2 justify-between">
          <m-popover ref="popover" v-if="!hideMenu">
             <m-drag-handle />

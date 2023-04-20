@@ -3,6 +3,7 @@ export default defineEventHandler(async (event) => {
    const notes = await prisma.note.findMany()
    console.log("Notes Sent")
    return {
-      data: notes,
+      notes,
+      timestamp: new Date(),
    };
 })

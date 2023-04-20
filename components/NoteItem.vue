@@ -35,10 +35,7 @@ function handleEnter() {
 async function handleDelete() {
    popover.value.hidePopover()
    loading.value = true
-   const { error } = await useFetch(`/api/notes/${props.note?.id}`, { method: "delete" })
-   if (!error.value) {
-      await refreshNuxtData("notes")
-   }
+   await deleteNote(props.note?.id)
    await nextTick()
    loading.value = false
 }

@@ -2,10 +2,13 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "dotenv -e .env.local -- nuxt dev",
+    "dev:remote": "dotenv -e .env -- nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "pushdb": "dotenv -e .env.local -- pnpm prisma db push",
+    "pushdb:remote": "dotenv -e .env -- pnpm prisma db push"
   },
   "devDependencies": {
     "@nuxt/image-edge": "1.0.0-28020728.5df24eb",
@@ -21,16 +24,16 @@
   "dependencies": {
     "@floating-ui/vue": "^0.2.1",
     "@fontsource/numans": "^4.5.10",
-    "@nuxt/devtools": "^0.4.0",
+    "@nuxt/devtools": "^0.4.1",
     "@pinia/nuxt": "^0.4.8",
-    "@prisma/client": "^4.12.0",
+    "@prisma/client": "^4.13.0",
     "@unocss/reset": "^0.51.4",
     "@vueuse/core": "^9.13.0",
     "@vueuse/nuxt": "^9.13.0",
     "motion": "^10.15.5",
     "nuxt-swiper": "^1.1.0",
     "pinia": "^2.0.34",
-    "prisma": "^4.12.0",
+    "prisma": "^4.13.0",
     "sass": "^1.62.0",
     "sortablejs": "^1.15.0",
     "sortablejs-vue3": "^1.2.9"
