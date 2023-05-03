@@ -49,19 +49,19 @@ async function handleDelete() {
                <menu-item>
                   Convert to task
                   <template #icon>
-                     <Icon class="text-skyblue-500" name="eva:checkmark-square-2-fill" />
+                     <IconCSS class="text-skyblue-500" name="eva:checkmark-square-2-fill" />
                   </template>
                </menu-item>
                <menu-item>
                   Pin
                   <template #icon>
-                     <Icon class="text-green-500" name="ic:round-push-pin" />
+                     <IconCSS class="text-green-500" name="ic:round-push-pin" />
                   </template>
                </menu-item>
                <menu-item @click="handleDelete">
                   Delete
                   <template #icon>
-                     <Icon class="text-red-500" name="eva:trash-2-fill" />
+                     <IconCSS class="text-red-500" name="eva:trash-2-fill" />
                   </template>
                </menu-item>
             </template>

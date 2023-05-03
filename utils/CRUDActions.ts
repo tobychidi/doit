@@ -12,16 +12,17 @@ export async function createNewTask(task: Task) {
 }
 export async function createNewNote(note: Note) {
    if (note.note) {
-      const { error } = await useFetch("/api/notes", { method: "POST", body: note });
+      const { data, error } = await useFetch("/api/notes", { method: "post", body: note });
       if (!error.value) {
-         refreshNuxtData("notes");
+         await refreshNuxtData("notes");
+         return data
       }
    }
 }
 
 export async function createNewTasklist(tasklist: Tasklist) {
    if (tasklist.tasks) {
-      const { error } = await useFetch("/api/tasks", { method: "POST", body: tasklist });
+      const { error } = await useFetch("/api/tasks", { method: "post", body: tasklist });
       if (!error.value) {
          refreshNuxtData("tasks");
       }

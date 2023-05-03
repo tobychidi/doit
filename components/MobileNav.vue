@@ -18,19 +18,19 @@ function handleChangeTab(newTab: string) {
       <div class="w-full flex justify-around gap-2">
          <m-tab-button name="notes" :active-tab="activeTab" @change-tab="handleChangeTab">
             <template #icon>
-               <Icon class="text-xl" name="ic:round-sticky-note-2" />
+               <IconCSS class="text-xl" name="ic:round-sticky-note-2" />
             </template>
             Notes
          </m-tab-button>
          <m-tab-button name="tasks" :active-tab="activeTab" @change-tab="handleChangeTab">
             <template #icon>
-               <Icon class="text-xl" name="eva:square-fill" />
+               <IconCSS class="text-xl" name="eva:square-fill" />
             </template>
             Tasks
          </m-tab-button>
          <m-tab-button name="tasksDone" :active-tab="activeTab" @change-tab="handleChangeTab">
             <template #icon>
-               <Icon class="text-xl" name="eva:checkmark-square-2-fill" />
+               <IconCSS class="text-xl" name="eva:checkmark-square-2-fill" />
             </template>
             Done
          </m-tab-button>

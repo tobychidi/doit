@@ -2,7 +2,6 @@ export default defineEventHandler(async (event) => {
    const task = await readBody(event)
    console.log(task.title)
    if(task.task){
-      console.log("tasktast",task.task)
       const newTask = await prisma.task.create({
          data: task,
       });

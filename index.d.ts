@@ -16,6 +16,12 @@ declare global{
       tasks: Task[];
       done?: boolean;
    }
+
+
+   interface SlicksortInsertEvent {
+      newIndex: number;
+      value: any;
+   }
 }
 
 export {}

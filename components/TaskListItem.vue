@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Sortable } from "sortablejs-vue3";
+import { SlickList, SlickItem } from 'vue-slicksort';
 
 const props = defineProps<{
    tasklist?: Tasklist;
@@ -12,9 +12,6 @@ const emit = defineEmits<{
    (e: "enter", payload: Tasklist): void;
    (e: "ctrlEnter", payload: Tasklist): void;
 }>();
-
-const dragOptions = useDragOptions();
-const tasksChange = ref(0);
 
 const title = ref(props.tasklist?.title ?? "");
 const tasks = ref(props.tasklist?.tasks ?? []);
@@ -60,8 +57,8 @@ function handleCntrlEnter() {
    emit("ctrlEnter", currentTasklist.value);
 }
 
-async function handleTasksAdd(e: any) {
-   const dataItem = sortableEventItemDataValue(e)
+async function handleTasksAdd(e: SlicksortInsertEvent) {
+   const dataItem = e.value
    if (dataItem.note) {
       await createNewTask({
          task: dataItem.note,
@@ -97,19 +94,19 @@ async function handleDelete() {
                <menu-item>
                   Convert to note
                   <template #icon>
-                     <Icon name="ic:round-sticky-note-2" />
+                     <IconCSS name="ic:round-sticky-note-2" />
                   </template>
                </menu-item>
                <menu-item>
                   Pin
                   <template #icon>
-                     <Icon class="text-green-500" name="ic:round-push-pin" />
+                     <IconCSS class="text-green-500" name="ic:round-push-pin" />
                   </template>
                </menu-item>
                <menu-item @click="handleDelete">
                   Delete
                   <template #icon>
-                     <Icon class="text-red-500" name="eva:trash-2-fill" />
+                     <IconCSS class="text-red-500" name="eva:trash-2-fill" />
                   </template>
                </menu-item>
             </template>
@@ -120,12 +117,10 @@ async function handleDelete() {
       </div>
       <task-item class="bg-light-400 dark:bg-dark-500" clear-on-enter hide-menu @enter="createNewTaskInList"
          @ctrl-enter="handleEnter" />
-      <Sortable v-model:list="tasks" :key="tasksChange" item-key="task" :options="dragOptions" @add="handleTasksAdd">
-         <template #item="{ element: task }">
-            <li class="mb-4" :data-value="JSON.stringify(task)">
-               <task-item class="bg-light-400 dark:bg-dark-500" :task="task" />
-            </li>
-         </template>
-      </Sortable>
+      <SlickList v-if="tasks" :list="tasks" group="tasklistTasks" @sort-insert="handleTasksAdd">
+         <SlickItem v-for="(task, i) in tasks" :key="task" :index="i" class="mb-4">
+            <task-item class="bg-light-400 dark:bg-dark-500" :task="task" />
+         </SlickItem>
+      </SlickList>
    </m-card>
 </template>
