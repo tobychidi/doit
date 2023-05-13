@@ -26,5 +26,6 @@ body {
 
 .ghost {
    opacity: 0.4;
+   z-index: 1;
 }
 </style>

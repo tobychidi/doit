@@ -1,17 +1,15 @@
 export default defineEventHandler(async (event) => {
-   console.log("hit")
    const task_id = parseInt(event.context.params?.task_id ?? "");
-   console.log(task_id);
 
-   const updatedtask = await readBody(event);
-
-   console.log(updatedtask);
-
+   const updatedtask:{task: Task} = await readBody(event);
+   
    if (task_id) {
+      console.log(updatedtask);
       await prisma.task.update({
          where: { id: task_id },
          data: {
             ...updatedtask.task,
+            group: updatedtask.task.done ? "tasksDone" : "tasks"
          },
       });
    }

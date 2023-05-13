@@ -1,35 +1,59 @@
 export default defineEventHandler(async (event) => {
-   const task = await readBody(event)
-   console.log(task.title)
-   if(task.task){
-      const newTask = await prisma.task.create({
-         data: task,
-      });
-      return {
-         ...newTask,
-      };
-   }
-   if(task.title){
-      console.log("tasklist++++++", task);
-      const newTasklist = await prisma.tasklist.create({
-         data: {
-            title: task.title
+   const task = await readBody(event);
+   const group = task.done ? "tasksDone" : "tasks";
+
+   if (task.task || task.title) {
+      const res = await prisma.$transaction(async (tx) => {
+         
+         await tx.task.updateMany({
+            where: {
+               tasklistId: null,
+               group: group,
+               order: {
+                  gte: task.order ?? 0,
+               },
+            },
+            data: {
+               order: { increment: 1 },
+            },
+         });
+
+         await tx.tasklist.updateMany({
+            where: {
+               group: group,
+               order: {
+                  gte: task.ordder ?? 0,
+               },
+            },
+            data: {
+               order: { increment: 1 },
+            },
+         });
+
+         if (task.task) {
+            const newTask = await tx.task.create({
+               data: task,
+            });
+            return newTask;
+         }
+
+         if (task.title) {
+            const newTasklist = await tx.tasklist.create({
+               data: {
+                  title: task.title,
+                  tasks: {
+                     create: task.tasks,
+                  },
+               },
+            });
+            return newTasklist;
          }
       });
 
-      if(task.tasks){
-         const parsedTasks = Array.from(task.tasks, (taskItem: Task) => ({
-            ...taskItem,
-            tasklistId: newTasklist.id
-         }));
-         console.log(parsedTasks);
-         const newTasks = await prisma.task.createMany({
-            data: parsedTasks,
-         });
-      }
       return {
-         ...newTasklist,
+         ...res,
       };
    }
-   sendError(event, createError({statusCode: 404, statusMessage: "Invalid payload"}))
-})
+
+   sendError(event, createError({ statusCode: 404, statusMessage: "Invalid payload" }));
+});

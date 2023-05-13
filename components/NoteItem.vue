@@ -19,7 +19,7 @@ const popover = ref<any | null>(null)
 const loading = ref(false)
 
 watchThrottled(noteValue, async () => {
-   if (!props.noUpdate) await useFetch(`/api/notes/${props.note?.id}`, { method: "PATCH", body: { note: noteValue.value } })
+   if (!props.noUpdate) await updateNote({ noteId: props.note?.id, note: { note: noteValue.value } })
 }, { throttle: 1500 })
 
 function handleEnter() {

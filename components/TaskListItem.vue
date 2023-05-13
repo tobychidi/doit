@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { SlickList, SlickItem } from 'vue-slicksort';
+import { SlickList, SlickItem } from "vue-slicksort";
 
 const props = defineProps<{
    tasklist?: Tasklist;
@@ -9,8 +9,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-   (e: "enter", payload: Tasklist): void;
-   (e: "ctrlEnter", payload: Tasklist): void;
+   enter: [payload: Tasklist];
+   ctrlEnter: [payload: Tasklist];
 }>();
 
 const title = ref(props.tasklist?.title ?? "");
@@ -21,29 +21,33 @@ const currentTasklist = computed<Tasklist>(() => ({
    tasks: tasks.value,
 }));
 
-const popover = ref<any | null>(null)
+const popover = ref<any | null>(null);
 
-const loading = ref(false)
+const loading = ref(false);
 
-watchThrottled(currentTasklist, async () => {
-   if (!props.noUpdate) await updateTasklist({
-      tasklistId: props.tasklist?.id,
-      tasklist: { title: title.value }
-   })
-}, { throttle: 1500 })
+watchThrottled(
+   currentTasklist,
+   async () => {
+      if (!props.noUpdate)
+         await updateTasklist({
+            tasklistId: props.tasklist?.id,
+            tasklist: { title: title.value },
+         });
+   },
+   { throttle: 1500 }
+);
 
 function createNewTaskInList(task: Task) {
    if (task.task) {
       if (props.tasklist && props.tasklist.id) {
-         createNewTask({ ...task, tasklistId: props.tasklist.id })
-         return
+         createNewTask({ ...task, tasklistId: props.tasklist.id });
+         return;
       }
       tasks.value.push(task);
    }
 }
 function resetTasklist() {
-   title.value = "",
-      tasks.value = []
+   (title.value = ""), (tasks.value = []);
 }
 function handleEnter() {
    emit("enter", currentTasklist.value);
@@ -58,36 +62,35 @@ function handleCntrlEnter() {
 }
 
 async function handleTasksAdd(e: SlicksortInsertEvent) {
-   const dataItem = e.value
+   const dataItem = e.value;
    if (dataItem.note) {
       await createNewTask({
          task: dataItem.note,
          done: false,
-         tasklistId: props.tasklist?.id
-      })
-      await deleteNote(dataItem.id)
+         tasklistId: props.tasklist?.id,
+      });
+      await deleteNote(dataItem.id);
    }
    if (dataItem.task) {
       await updateTask({
          taskId: dataItem.id,
-         task: { ...dataItem, tasklistId: props.tasklist?.id }
-      })
+         task: { ...dataItem, tasklistId: props.tasklist?.id },
+      });
    }
 }
 
 async function handleDelete() {
-   popover.value.hidePopover()
-   loading.value = true
-   await deleteTasklist(props.tasklist?.id)
-   await nextTick()
-   loading.value = false
+   popover.value.hidePopover();
+   loading.value = true;
+   await deleteTasklist(props.tasklist?.id);
+   await nextTick();
+   loading.value = false;
 }
 </script>
 
 <template>
-   <m-card :class="{ 'pulsing': loading }">
+   <m-card :class="{ pulsing: loading }">
       <div class="h-full w-full flex items-center gap-2 justify-between">
-
          <m-popover ref="popover" v-if="!hideMenu">
             <m-drag-handle />
             <template #content>
@@ -117,7 +120,7 @@ async function handleDelete() {
       </div>
       <task-item class="bg-light-400 dark:bg-dark-500" clear-on-enter hide-menu @enter="createNewTaskInList"
          @ctrl-enter="handleEnter" />
-      <SlickList v-if="tasks" :list="tasks" group="tasklistTasks" @sort-insert="handleTasksAdd">
+      <SlickList v-if="tasks" :list="tasks" group="tasklistTasks" v-bind="dragOptions" @sort-insert="handleTasksAdd">
          <SlickItem v-for="(task, i) in tasks" :key="task" :index="i" class="mb-4">
             <task-item class="bg-light-400 dark:bg-dark-500" :task="task" />
          </SlickItem>

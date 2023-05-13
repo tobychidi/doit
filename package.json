@@ -10,14 +10,16 @@
     "preview:remote": "dotenv -e .env -- nuxt preview",
     "postinstall": "nuxt prepare",
     "pushdb": "dotenv -e .env.local -- pnpm prisma db push",
-    "pushdb:remote": "dotenv -e .env -- pnpm prisma db push"
+    "pushdb:remote": "dotenv -e .env -- pnpm prisma db push",
+    "studio": "dotenv -e .env.local -- pnpm prisma studio",
+    "studio:remote": "dotenv -e .env -- pnpm studio"
   },
   "devDependencies": {
     "@nuxt/image-edge": "1.0.0-28020728.5df24eb",
     "@parcel/watcher": "^2.1.0",
     "@tresjs/cientos": "2.0.0-beta.6",
     "@tresjs/core": "2.0.0-beta.12",
-    "@unocss/nuxt": "^0.51.8",
+    "@unocss/nuxt": "^0.51.12",
     "nuxt": "^3.4.3",
     "nuxt-icon": "^0.4.0",
     "three": "^0.151.3"
@@ -25,17 +27,17 @@
   "dependencies": {
     "@floating-ui/vue": "^0.2.1",
     "@fontsource/numans": "^4.5.10",
-    "@nuxt/devtools": "^0.4.5",
+    "@nuxt/devtools": "^0.4.6",
     "@nuxtjs/color-mode": "^3.2.0",
-    "@pinia/nuxt": "^0.4.9",
-    "@prisma/client": "^4.13.0",
-    "@unocss/reset": "^0.51.8",
+    "@pinia/nuxt": "^0.4.10",
+    "@prisma/client": "^4.14.0",
+    "@unocss/reset": "^0.51.12",
     "@vueuse/core": "^10.1.2",
     "@vueuse/nuxt": "^10.1.2",
     "motion": "^10.15.5",
     "nuxt-swiper": "^1.1.0",
-    "pinia": "^2.0.35",
-    "prisma": "^4.13.0",
+    "pinia": "^2.0.36",
+    "prisma": "^4.14.0",
     "sass": "^1.62.1",
     "vue-slicksort": "^2.0.5"
   }

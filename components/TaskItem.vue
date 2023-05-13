@@ -8,8 +8,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-   (e: "enter", payload: Task): void;
-   (e: "ctrlEnter", payload: Task): void;
+   enter: [payload: Task];
+   ctrlEnter: [payload: Task];
 }>();
 
 const taskValue = ref(props.task?.task ?? "");

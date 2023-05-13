@@ -2,41 +2,57 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["jsonProtocol"]
+   provider        = "prisma-client-js"
+   previewFeatures = ["jsonProtocol", "views"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+   provider = "postgresql"
+   url      = env("DATABASE_URL")
 }
 
 model Task {
-  id   Int     @id @default(autoincrement())
-  task String
-  done Boolean
+   id   Int     @id @default(autoincrement())
+   task String
+   done Boolean
 
-  tasklist   Tasklist? @relation(fields: [tasklistId], references: [id], onDelete: Cascade)
-  tasklistId Int?
+   group  Group?   @default(tasks)
+   order  Int?     @default(0)
+   pinned Boolean? @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+   tasklist   Tasklist? @relation(fields: [tasklistId], references: [id], onDelete: Cascade)
+   tasklistId Int?
+
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
 }
 
 model Tasklist {
-  id    Int     @id @default(autoincrement())
-  title String
-  tasks Task[]
-  done  Boolean @default(false)
+   id    Int     @id @default(autoincrement())
+   title String
+   tasks Task[]
+   done  Boolean @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+   group  Group?   @default(tasks)
+   order  Int?     @default(0)
+   pinned Boolean? @default(false)
+
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
 }
 
 model Note {
-  id   Int    @id @default(autoincrement())
-  note String
+   id   Int    @id @default(autoincrement())
+   note String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+   order  Int?     @default(0)
+   pinned Boolean? @default(false)
+
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
+}
+
+enum Group {
+   tasks
+   tasksDone
 }

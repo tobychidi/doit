@@ -1,6 +1,7 @@
 import type { MaybeRef } from "@vueuse/core";
 
 type PartialTask = Partial<Task>;
+type PartialNote = Partial<Note>
 
 export async function createNewTask(task: Task) {
    if (task.task) {
@@ -12,10 +13,13 @@ export async function createNewTask(task: Task) {
 }
 export async function createNewNote(note: Note) {
    if (note.note) {
-      const { data, error } = await useFetch("/api/notes", { method: "post", body: note });
+      const { data, error } = await useFetch("/api/notes", {
+         method: "post",
+         body: note,
+      });
       if (!error.value) {
          await refreshNuxtData("notes");
-         return data
+         return data;
       }
    }
 }
@@ -43,18 +47,28 @@ export async function deleteTask(taskId?: number) {
          method: "delete",
       });
       if (!error.value) {
-         await refreshNuxtData("tasks");
+         await refreshNuxtData(["tasks", "tasksDone"]);
       }
    }
 }
 export async function deleteTasklist(tasklistId?: number) {
-   if(tasklistId){
+   if (tasklistId) {
       const { error } = await useFetch(`/api/tasks/list/${tasklistId}`, {
          method: "delete",
       });
       if (!error.value) {
-         await refreshNuxtData("tasks");
+         await refreshNuxtData(["tasks", "tasksDone"]);
       }
+   }
+}
+
+export async function updateNote(args: { noteId?: number; note: MaybeRef<PartialNote> }) {
+   if (args.noteId) {
+      await useFetch(`/api/notes/${args.noteId}`, {
+         method: "PATCH",
+         body: { note: unref(args.note) },
+      });
+      await refreshNuxtData("notes");
    }
 }
 
@@ -64,7 +78,7 @@ export async function updateTask(args: { taskId?: number; task: MaybeRef<Partial
          method: "PATCH",
          body: { task: unref(args.task) },
       });
-      await refreshNuxtData("tasks");
+      await refreshNuxtData(["tasks", "tasksDone"]);
    }
 }
 
@@ -77,6 +91,6 @@ export async function updateTasklist(args: {
          method: "PATCH",
          body: args.tasklist,
       });
-      await refreshNuxtData("tasks");
+      await refreshNuxtData(["tasks", "tasksDone"]);
    }
 }

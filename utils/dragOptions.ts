@@ -2,5 +2,6 @@ export const dragOptions = ref({
    axis:"y",
    accept: true,
    helperClass: "ghost",
-   // distance: 10,
+   distance: 20,
+   useDragHandle: true
 });

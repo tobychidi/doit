@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
    
    const notes = await prisma.note.findMany({
       orderBy: {
-         id: "desc"
+         order: "asc"
       }
    })
    console.log("notes sent")
