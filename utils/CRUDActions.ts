@@ -1,7 +1,7 @@
 import type { MaybeRef } from "@vueuse/core";
 
 type PartialTask = Partial<Task>;
-type PartialNote = Partial<Note>
+type PartialNote = Partial<Note>;
 
 export async function createNewTask(task: Task) {
    if (task.task) {
@@ -66,7 +66,7 @@ export async function updateNote(args: { noteId?: number; note: MaybeRef<Partial
    if (args.noteId) {
       await useFetch(`/api/notes/${args.noteId}`, {
          method: "PATCH",
-         body: { note: unref(args.note) },
+         body: unref(args.note),
       });
       await refreshNuxtData("notes");
    }
@@ -76,7 +76,7 @@ export async function updateTask(args: { taskId?: number; task: MaybeRef<Partial
    if (args.taskId) {
       await useFetch(`/api/tasks/${args.taskId}`, {
          method: "PATCH",
-         body: { task: unref(args.task) },
+         body: unref(args.task),
       });
       await refreshNuxtData(["tasks", "tasksDone"]);
    }

@@ -60,7 +60,7 @@ const swiperOptions /*: SwiperOptions*/ = {
 };
 
 async function handleNotesSort(e: SlicksortSortEndEvent) {
-   const currentNote = notes.value?.notes[e.oldIndex];
+   const currentNote = notes.value?.notes[e.oldIndex];0
    await updateNote({
       noteId: currentNote?.id,
       note: {
@@ -71,6 +71,17 @@ async function handleNotesSort(e: SlicksortSortEndEvent) {
 
 async function handleTasksSort(e: SlicksortSortEndEvent) {
    const currentTask = tasks.value?.tasks[e.oldIndex];
+
+   if(currentTask?.title){
+      await updateTasklist({
+         tasklistId: currentTask?.id,
+         tasklist:{
+            order: e.newIndex,
+            group: currentTask?.group
+         }
+      }) 
+      return
+   }
    await updateTask({
       taskId: currentTask?.id,
       task: {

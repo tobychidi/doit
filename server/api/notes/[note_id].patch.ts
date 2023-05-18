@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
    const note_id = parseInt(event.context.params?.note_id ?? "");
 
-   const updatedNote: { note: Note } = await readBody(event);
+   const updatedNote: Note = await readBody(event);
 
    if (note_id) {
       await prisma.$transaction(async (tx) => {
@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
             },
          });
 
-         const updatedOrder = updatedNote.note.order ?? 0;
+         const updatedOrder = updatedNote.order ?? 0;
          const currentOrder = currentNote?.order ?? 0;
          if (currentOrder !== updatedOrder) {
             if (updatedOrder > currentOrder) {
@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
          }
          await tx.note.update({
             where: { id: note_id },
-            data: { ...updatedNote.note },
+            data: { ...updatedNote },
          });
       });
    }

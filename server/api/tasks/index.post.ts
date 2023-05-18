@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client";
+
 export default defineEventHandler(async (event) => {
    const task = await readBody(event);
    const group = task.done ? "tasksDone" : "tasks";
@@ -22,7 +24,7 @@ export default defineEventHandler(async (event) => {
             where: {
                group: group,
                order: {
-                  gte: task.ordder ?? 0,
+                  gte: task.order ?? 0,
                },
             },
             data: {
@@ -48,6 +50,8 @@ export default defineEventHandler(async (event) => {
             });
             return newTasklist;
          }
+      },{
+         isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted
       });
 
       return {
