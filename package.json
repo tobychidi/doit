@@ -2,17 +2,17 @@
   "private": true,
   "scripts": {
     "build": "dotenv -e .env.local -- nuxt build",
-    "build:remote": "dotenv -e .env -- nuxt build",
+    "build:remote": "nuxt build",
     "dev": "dotenv -e .env.local -- nuxt dev",
-    "dev:remote": "dotenv -e .env -- nuxt dev",
+    "dev:remote": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "dotenv -e .env.local -- nuxt preview",
-    "preview:remote": "dotenv -e .env -- nuxt preview",
+    "preview:remote": "nuxt preview",
     "postinstall": "nuxt prepare",
     "pushdb": "dotenv -e .env.local -- pnpm prisma db push",
-    "pushdb:remote": "dotenv -e .env -- pnpm prisma db push",
+    "pushdb:remote": "pnpm prisma db push",
     "studio": "dotenv -e .env.local -- pnpm prisma studio",
-    "studio:remote": "dotenv -e .env -- pnpm studio"
+    "studio:remote": "pnpm studio"
   },
   "devDependencies": {
     "@nuxt/image-edge": "1.0.0-28020728.5df24eb",
