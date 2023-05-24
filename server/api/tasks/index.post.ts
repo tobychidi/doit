@@ -5,54 +5,60 @@ export default defineEventHandler(async (event) => {
    const group = task.done ? "tasksDone" : "tasks";
 
    if (task.task || task.title) {
-      const res = await prisma.$transaction(async (tx) => {
-         
-         await tx.task.updateMany({
-            where: {
-               tasklistId: null,
-               group: group,
-               order: {
-                  gte: task.order ?? 0,
-               },
-            },
-            data: {
-               order: { increment: 1 },
-            },
-         });
-
-         await tx.tasklist.updateMany({
-            where: {
-               group: group,
-               order: {
-                  gte: task.order ?? 0,
-               },
-            },
-            data: {
-               order: { increment: 1 },
-            },
-         });
-
-         if (task.task) {
-            const newTask = await tx.task.create({
-               data: task,
-            });
-            return newTask;
-         }
-
-         if (task.title) {
-            const newTasklist = await tx.tasklist.create({
-               data: {
-                  title: task.title,
-                  tasks: {
-                     create: task.tasks,
+      const res = await prisma.$transaction(
+         async (tx) => {
+            await tx.task.updateMany({
+               where: {
+                  tasklistId: null,
+                  group: group,
+                  order: {
+                     gte: task.order ?? 0,
                   },
                },
+               data: {
+                  order: { increment: 1 },
+               },
             });
-            return newTasklist;
+
+            await tx.tasklist.updateMany({
+               where: {
+                  group: group,
+                  order: {
+                     gte: task.order ?? 0,
+                  },
+               },
+               data: {
+                  order: { increment: 1 },
+               },
+            });
+
+            if (task.task) {
+               const newTask = await tx.task.create({
+                  data: {
+                     ...task,
+                     group: group,
+                  },
+               });
+               return newTask;
+            }
+
+            if (task.title) {
+               const newTasklist = await tx.tasklist.create({
+                  data: {
+                     title: task.title,
+                     group: group,
+                     tasks: {
+                        create: task.tasks,
+                     },
+                  },
+               });
+               return newTasklist;
+            }
+         },
+         {
+            isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
          }
-      },{
-         isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted
-      });
+      );
 
       return {
          ...res,

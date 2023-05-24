@@ -3,12 +3,12 @@ export default defineEventHandler(async (event) => {
 
    if (task_id) {
       const res = await prisma.$transaction(async (tx) => {
-         const task = await prisma.task.delete({
+         const deletedTask = await tx.task.delete({
             where: { id: task_id },
          });
 
-         const deletedOrder = task.order ?? 0;
-         const deletedGroup = task.group;
+         const deletedOrder = deletedTask.order ?? 0;
+         const deletedGroup = deletedTask.group;
 
          await tx.task.updateMany({
             where: {
@@ -34,10 +34,12 @@ export default defineEventHandler(async (event) => {
                order: { decrement: 1 },
             },
          });
+
+         return deletedTask;
       });
 
       console.log("deleted", res);
       return res;
    }
-   return {};
+   SendTaskNotFound(event);
 });

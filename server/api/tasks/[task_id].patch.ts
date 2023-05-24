@@ -1,12 +1,10 @@
-import Note_idDelete from "../notes/[note_id].delete";
-
 export default defineEventHandler(async (event) => {
    const task_id = parseInt(event.context.params?.task_id ?? "");
 
    const updatedTask: Task = await readBody(event);
 
    if (task_id) {
-      console.log(updatedTask);
+      console.log("updated task", updatedTask);
 
       const res = await prisma.$transaction(async (tx) => {
          const currentTask = await tx.task.findUnique({
@@ -15,14 +13,65 @@ export default defineEventHandler(async (event) => {
             },
          });
 
+         console.log("currentTask: ", currentTask);
+
          let updatedOrder = updatedTask.order ?? 0;
          const currentOrder = currentTask?.order ?? 0;
 
-         const updatedGroup = updatedTask.done ? "tasksDone" : "tasks";
+         const updatedGroup =
+            updatedTask.done !== undefined
+               ? updatedTask.done
+                  ? "tasksDone"
+                  : "tasks"
+               : updatedTask.group;
          const currentGroup = currentTask?.group;
+
+         console.log("updatedGroup: " + updatedGroup);
 
          if (updatedGroup !== currentGroup) {
             updatedOrder = 0;
+
+            //This sestion increments other tasks in new group
+            await tx.task.updateMany({
+               where: {
+                  tasklistId: null,
+                  group: updatedGroup,
+                  order: { gte: updatedOrder },
+               },
+               data: {
+                  order: { increment: 1 },
+               },
+            });
+            await tx.tasklist.updateMany({
+               where: {
+                  group: updatedGroup,
+                  order: { gte: updatedOrder },
+               },
+               data: {
+                  order: { increment: 1 },
+               },
+            });
+
+            //Decrement order of tasks in old group
+            await tx.task.updateMany({
+               where: {
+                  tasklistId: null,
+                  group: currentGroup,
+                  order: { gte: updatedOrder },
+               },
+               data: {
+                  order: { decrement: 1 },
+               },
+            });
+            await tx.tasklist.updateMany({
+               where: {
+                  group: currentGroup,
+                  order: { gte: updatedOrder },
+               },
+               data: {
+                  order: { decrement: 1 },
+               },
+            });
          }
 
          if (currentOrder !== updatedOrder) {
@@ -81,5 +130,5 @@ export default defineEventHandler(async (event) => {
       return res;
    }
 
-   sendError(event, createError({ statusCode: 404, statusMessage: "Task not found" }));
+   SendTaskNotFound(event);
 });

@@ -7,7 +7,7 @@ export async function createNewTask(task: Task) {
    if (task.task) {
       const { error } = await useFetch("/api/tasks", { method: "POST", body: task });
       if (!error.value) {
-         await refreshNuxtData("tasks");
+         await refreshNuxtData(["tasks", "tasksDone"]);
       }
    }
 }
@@ -28,7 +28,7 @@ export async function createNewTasklist(tasklist: Tasklist) {
    if (tasklist.tasks) {
       const { error } = await useFetch("/api/tasks", { method: "post", body: tasklist });
       if (!error.value) {
-         refreshNuxtData("tasks");
+         refreshNuxtData(["tasks", "tasksDone"]);
       }
    }
 }
@@ -46,6 +46,7 @@ export async function deleteTask(taskId?: number) {
       const { error } = await useFetch(`/api/tasks/${taskId}`, {
          method: "delete",
       });
+      console.log(error.value);
       if (!error.value) {
          await refreshNuxtData(["tasks", "tasksDone"]);
       }
