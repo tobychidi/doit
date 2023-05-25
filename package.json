@@ -15,23 +15,23 @@
     "studio:remote": "pnpm studio"
   },
   "devDependencies": {
-    "@nuxt/image-edge": "1.0.0-28020728.5df24eb",
+    "@nuxt/image-edge": "1.0.0-28059208.2abef1b",
     "@parcel/watcher": "^2.1.0",
-    "@tresjs/cientos": "2.0.0-beta.6",
-    "@tresjs/core": "2.0.0-beta.12",
-    "@unocss/nuxt": "^0.51.13",
+    "@tresjs/cientos": "2.1.1",
+    "@tresjs/core": "2.1.1",
+    "@unocss/nuxt": "^0.52.3",
     "nuxt": "^3.5.1",
     "nuxt-icon": "^0.4.1",
-    "three": "^0.151.3"
+    "three": "^0.152.2"
   },
   "dependencies": {
-    "@floating-ui/vue": "^0.2.1",
-    "@fontsource/numans": "^4.5.10",
-    "@nuxt/devtools": "^0.4.6",
+    "@floating-ui/vue": "^1.0.0",
+    "@fontsource/numans": "^5.0.1",
+    "@nuxt/devtools": "^0.5.3",
     "@nuxtjs/color-mode": "^3.2.0",
     "@pinia/nuxt": "^0.4.11",
     "@prisma/client": "^4.14.1",
-    "@unocss/reset": "^0.51.13",
+    "@unocss/reset": "^0.52.3",
     "@vueuse/core": "^10.1.2",
     "@vueuse/nuxt": "^10.1.2",
     "motion": "^10.16.2",

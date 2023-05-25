@@ -21,7 +21,8 @@
 }
 
 .instagram {
-   background: radial-gradient(circle farthest-corner at 28% 100%, var(--yellow) 0%, var(--yellow_to) 10%, var(--orange) 22%, var(--red) 35%, transparent 65%),
-      linear-gradient(145deg, var(--blue) 10%, var(--purple) 70%)
+   // background: radial-gradient(circle farthest-corner at 28% 100%, var(--yellow) 0%, var(--yellow_to) 10%, var(--orange) 22%, var(--red) 35%, transparent 65%),
+   //    linear-gradient(145deg, var(--blue) 10%, var(--purple) 70%);
+   background: red;
 }
 </style>
