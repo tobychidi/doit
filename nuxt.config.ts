@@ -8,7 +8,6 @@ export default defineNuxtConfig({
       "@unocss/nuxt",
       "@vueuse/nuxt",
       "nuxt-icon",
-      "nuxt-swiper",
       "@nuxt/devtools",
       "@nuxt/image-edge",
       "@nuxtjs/color-mode",
